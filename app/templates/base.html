@@ -14,7 +14,7 @@
         </div>
     </header>
 
-    <div class="layout container">
+    <div class="layout">
         <aside class="sidebar">
             <nav>
                 <a href="{{ url_for('main.index') }}" {% if request.endpoint == 'main.index' %}class="active"{% endif %}>Ranking</a>
@@ -25,15 +25,17 @@
         </aside>
 
         <main>
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, msg in messages %}
-                        <div class="flash flash-{{ category }}">{{ msg }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+            <div class="main-inner">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, msg in messages %}
+                            <div class="flash flash-{{ category }}">{{ msg }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
 
-            {% block content %}{% endblock %}
+                {% block content %}{% endblock %}
+            </div>
         </main>
     </div>
 
