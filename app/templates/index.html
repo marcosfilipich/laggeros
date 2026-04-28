@@ -5,34 +5,36 @@
 <div class="section">
     <div class="section-header">
         <h2>Tabla <span class="accent">General</span></h2>
-        <span class="section-meta">Ranking general de lag</span>
+        <span class="section-meta">Ranking general de puntos</span>
     </div>
     {% if ranking %}
     <table class="standings">
         <thead>
             <tr>
                 <th class="num">#</th>
-                <th>Player</th>
-                <th class="num">Lag prom (ms)</th>
-                <th class="num">Peor (ms)</th>
+                <th>Nickname</th>
+                <th>Nombre real</th>
+                <th class="num">Puntos</th>
                 <th class="num">Reportes</th>
+                <th>Ultimo</th>
             </tr>
         </thead>
         <tbody>
             {% for row in ranking %}
             <tr>
                 <td class="pos">{{ loop.index }}</td>
-                <td class="player">{{ row.name }}</td>
-                <td class="num">{{ "%.0f"|format(row.avg_lag) }}</td>
-                <td class="num">{{ row.max_lag }}</td>
+                <td class="player">{{ row.nickname }}</td>
+                <td style="color: var(--text-secondary);">{{ row.nombre_real or "-" }}</td>
+                <td class="num">{{ row.total_points }}</td>
                 <td class="num">{{ row.report_count }}</td>
+                <td style="color: var(--text-secondary);">{% if row.last_report %}{{ row.last_report.strftime("%Y-%m-%d %H:%M") }}{% else %}-{% endif %}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     {% else %}
     <div class="empty-state">
-        Todavia no hay reportes. <a href="{{ url_for('main.report') }}">Reporta el primer lag</a>.
+        Todavia no hay players. <a href="{{ url_for('main.manage') }}">Agrega el primero</a>.
     </div>
     {% endif %}
 </div>

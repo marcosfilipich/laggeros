@@ -12,17 +12,15 @@
             <tr>
                 <th>Fecha (UTC)</th>
                 <th>Player</th>
-                <th class="num">Lag (ms)</th>
-                <th>Nota</th>
+                <th class="num">Puntos</th>
             </tr>
         </thead>
         <tbody>
             {% for r in reports %}
             <tr>
-                <td>{{ r.reported_at.strftime("%Y-%m-%d %H:%M") }}</td>
-                <td class="player">{{ r.player.name }}</td>
-                <td class="num">{{ r.lag_ms }}</td>
-                <td style="color: var(--text-secondary);">{{ r.note or "" }}</td>
+                <td>{{ r.date_inserted.strftime("%Y-%m-%d %H:%M") }}</td>
+                <td class="player">{{ r.player.nickname }}</td>
+                <td class="num">{{ r.points }}</td>
             </tr>
             {% endfor %}
         </tbody>

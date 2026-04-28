@@ -1,6 +1,7 @@
 import click
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import MetaData
 
 db = SQLAlchemy()
 
@@ -23,10 +24,14 @@ def create_app():
     @app.cli.command("seed")
     def seed():
         from app.models import Player
-        defaults_players = ["Marcos", "Capo1", "Capo2"]
-        for name in defaults_players:
-            if not Player.query.filter_by(name=name).first():
-                db.session.add(Player(name=name))
+        defaults = [
+            ("Marcos", "Marcos Filipich"),
+            ("Capo1", None),
+            ("Capo2", None),
+        ]
+        for nickname, nombre_real in defaults:
+            if not Player.query.filter_by(nickname=nickname).first():
+                db.session.add(Player(nickname=nickname, nombre_real=nombre_real))
         db.session.commit()
         print("Seeded default players.")
 
@@ -34,8 +39,10 @@ def create_app():
     @click.confirmation_option(prompt="Esto borra TODAS las tablas y datos. Seguro?")
     def reset_db():
         from app import models  # noqa: F401
-        db.drop_all()
+        meta = MetaData()
+        meta.reflect(bind=db.engine)
+        meta.drop_all(bind=db.engine)
         db.create_all()
-        print("Database reset (all tables dropped and recreated).")
+        print(f"Database reset: dropped {len(meta.tables)} table(s), recreated current schema.")
 
     return app

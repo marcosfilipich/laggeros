@@ -7,11 +7,29 @@
         <span class="section-meta">{{ players|length }} en total</span>
     </div>
     <form method="post" class="form-body">
-        <label>Nombre <input type="text" name="name" required maxlength="80"></label>
+        <label>Nickname <input type="text" name="nickname" required maxlength="80" placeholder="Apodo unico"></label>
+        <label>Nombre real <input type="text" name="nombre_real" maxlength="120" placeholder="Opcional"></label>
         <button type="submit">Agregar player</button>
     </form>
-    <ul class="simple-list">
-        {% for p in players %}<li>{{ p.name }}</li>{% else %}<li class="empty-state" style="padding: 0.85rem;">Ningun player todavia</li>{% endfor %}
-    </ul>
+    {% if players %}
+    <table class="standings">
+        <thead>
+            <tr>
+                <th>Nickname</th>
+                <th>Nombre real</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in players %}
+            <tr>
+                <td class="player">{{ p.nickname }}</td>
+                <td style="color: var(--text-secondary);">{{ p.nombre_real or "-" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">Ningun player todavia.</div>
+    {% endif %}
 </div>
 {% endblock %}
