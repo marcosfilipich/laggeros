@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Historial{% endblock %}
+{% block content %}
+<section class="card">
+    <h2>Ultimos 100 reportes</h2>
+    {% if reports %}
+    <table class="ranking">
+        <thead>
+            <tr><th>Fecha (UTC)</th><th>Player</th><th>Juego</th><th>Lag (ms)</th><th>Nota</th></tr>
+        </thead>
+        <tbody>
+            {% for r in reports %}
+            <tr>
+                <td>{{ r.reported_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                <td>{{ r.player.name }}</td>
+                <td>{{ r.game.name }}</td>
+                <td>{{ r.lag_ms }}</td>
+                <td>{{ r.note or "" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}<p>Sin reportes todavia.</p>{% endif %}
+</section>
+{% endblock %}

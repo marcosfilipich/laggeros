@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Laggeros{% endblock %} - Capos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="{{ url_for('main.index') }}">Laggeros</a></h1>
+            <p class="tagline">Ranking oficial de los capos que mas laggean</p>
+            <nav>
+                <a href="{{ url_for('main.index') }}">Ranking</a>
+                <a href="{{ url_for('main.report') }}">Reportar lag</a>
+                <a href="{{ url_for('main.history') }}">Historial</a>
+                <a href="{{ url_for('main.manage') }}">Agregar players/juegos</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="flash flash-{{ category }}">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <small>Laggeros - hecho con Flask por los capos</small>
+        </div>
+    </footer>
+</body>
+</html>

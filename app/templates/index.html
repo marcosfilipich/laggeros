@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Ranking{% endblock %}
+{% block content %}
+<section class="card">
+    <h2>
+        Ranking de lag
+        {% if selected_game %} - {{ selected_game.name }}{% else %} - Todos los juegos{% endif %}
+    </h2>
+
+    <form method="get" class="filter-form">
+        <label for="game_id">Filtrar por juego:</label>
+        <select name="game_id" id="game_id" onchange="this.form.submit()">
+            <option value="">Todos los juegos</option>
+            {% for g in games %}
+                <option value="{{ g.id }}" {% if selected_game and selected_game.id == g.id %}selected{% endif %}>{{ g.name }}</option>
+            {% endfor %}
+        </select>
+        <noscript><button type="submit">Filtrar</button></noscript>
+    </form>
+
+    {% if ranking %}
+    <table class="ranking">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Player</th>
+                <th>Lag promedio (ms)</th>
+                <th>Peor lag (ms)</th>
+                <th>Reportes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in ranking %}
+            <tr>
+                <td class="pos">{{ loop.index }}</td>
+                <td>{{ row.name }}</td>
+                <td>{{ "%.0f"|format(row.avg_lag) }}</td>
+                <td>{{ row.max_lag }}</td>
+                <td>{{ row.report_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>Todavia no hay reportes. <a href="{{ url_for('main.report') }}">Reporta el primer lag</a>.</p>
+    {% endif %}
+</section>
+{% endblock %}

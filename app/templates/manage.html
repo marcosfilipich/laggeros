@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Agregar players / juegos{% endblock %}
+{% block content %}
+<section class="card">
+    <h2>Agregar player</h2>
+    <form method="post">
+        <input type="hidden" name="kind" value="player">
+        <label>Nombre <input type="text" name="name" required maxlength="80"></label>
+        <button type="submit">Agregar player</button>
+    </form>
+    <h3>Players actuales</h3>
+    <ul>{% for p in players %}<li>{{ p.name }}</li>{% else %}<li>(ninguno)</li>{% endfor %}</ul>
+</section>
+
+<section class="card">
+    <h2>Agregar juego</h2>
+    <form method="post">
+        <input type="hidden" name="kind" value="game">
+        <label>Nombre <input type="text" name="name" required maxlength="120"></label>
+        <button type="submit">Agregar juego</button>
+    </form>
+    <h3>Juegos actuales</h3>
+    <ul>{% for g in games %}<li>{{ g.name }}</li>{% else %}<li>(ninguno)</li>{% endfor %}</ul>
+</section>
+{% endblock %}
