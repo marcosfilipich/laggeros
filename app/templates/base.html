@@ -13,29 +13,32 @@
             <span class="tagline">Ranking oficial de los capos que mas laggean</span>
         </div>
     </header>
-    <nav>
-        <div class="container">
-            <a href="{{ url_for('main.index') }}" {% if request.endpoint == 'main.index' %}class="active"{% endif %}>Ranking</a>
-            <a href="{{ url_for('main.report') }}" {% if request.endpoint == 'main.report' %}class="active"{% endif %}>Reportar</a>
-            <a href="{{ url_for('main.history') }}" {% if request.endpoint == 'main.history' %}class="active"{% endif %}>Historial</a>
-            <a href="{{ url_for('main.manage') }}" {% if request.endpoint == 'main.manage' %}class="active"{% endif %}>Players & Juegos</a>
-        </div>
-    </nav>
 
-    <main class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, msg in messages %}
-                    <div class="flash flash-{{ category }}">{{ msg }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+    <div class="layout container">
+        <aside class="sidebar">
+            <nav>
+                <a href="{{ url_for('main.index') }}" {% if request.endpoint == 'main.index' %}class="active"{% endif %}>Ranking</a>
+                <a href="{{ url_for('main.report') }}" {% if request.endpoint == 'main.report' %}class="active"{% endif %}>Reportar</a>
+                <a href="{{ url_for('main.history') }}" {% if request.endpoint == 'main.history' %}class="active"{% endif %}>Historial</a>
+                <a href="{{ url_for('main.manage') }}" {% if request.endpoint == 'main.manage' %}class="active"{% endif %}>Players & Juegos</a>
+            </nav>
+        </aside>
 
-        {% block content %}{% endblock %}
-    </main>
+        <main>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, msg in messages %}
+                        <div class="flash flash-{{ category }}">{{ msg }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
 
     <footer>
-        <div class="container">Laggeros &middot; hecho por los capos &middot; {{ "now"|default("") }}</div>
+        <div class="container">Laggeros &middot; hecho por los capos</div>
     </footer>
 </body>
 </html>
