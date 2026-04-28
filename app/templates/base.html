@@ -11,11 +11,14 @@
         <div class="container header-top">
             <h1><a href="{{ url_for('main.index') }}">LAG<span class="accent">GEROS</span></a></h1>
             {% if current_user.is_authenticated %}
-                <span class="user-bar">
-                    Sesion: <strong>{{ current_user.nickname }}</strong>
-                    &middot; <a href="{{ url_for('auth.change_password') }}">cambiar password</a>
-                    &middot; <a href="{{ url_for('auth.logout') }}">salir</a>
-                </span>
+                <div class="user-menu">
+                    <span class="user-chip">
+                        <span class="user-chip-dot"></span>
+                        {{ current_user.nickname }}
+                    </span>
+                    <a href="{{ url_for('auth.change_password') }}" class="user-btn" title="Cambiar password">Password</a>
+                    <a href="{{ url_for('auth.logout') }}" class="user-btn user-btn-danger" title="Cerrar sesion">Salir</a>
+                </div>
             {% else %}
                 <span class="tagline">Ranking oficial de los capos que mas laggean</span>
             {% endif %}
@@ -27,7 +30,6 @@
             <nav>
                 <a href="{{ url_for('main.index') }}" {% if request.endpoint == 'main.index' %}class="active"{% endif %}>Ranking</a>
                 <a href="{{ url_for('main.history') }}" {% if request.endpoint == 'main.history' %}class="active"{% endif %}>Historial</a>
-                <a href="{{ url_for('main.manage') }}" {% if request.endpoint == 'main.manage' %}class="active"{% endif %}>Players</a>
             </nav>
         </aside>
 

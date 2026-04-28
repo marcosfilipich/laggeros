@@ -63,13 +63,57 @@ header h1 .accent { color: var(--accent); }
     text-transform: uppercase;
     letter-spacing: 1px;
 }
-.user-bar {
-    color: var(--text-secondary);
-    font-size: 0.78rem;
+/* ===== User menu (header right) ===== */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
 }
-.user-bar strong { color: var(--text-primary); font-weight: 600; }
-.user-bar a { color: var(--text-secondary); text-decoration: none; }
-.user-bar a:hover { color: var(--accent); }
+.user-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    color: var(--text-primary);
+    padding: 0.35rem 0.75rem 0.35rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
+}
+.user-chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2ea043;
+    box-shadow: 0 0 6px rgba(46, 160, 67, 0.6);
+}
+.user-btn {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    transition: all 0.15s;
+    line-height: 1;
+}
+.user-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    border-color: var(--text-secondary);
+}
+.user-btn-danger:hover {
+    color: white;
+    background: var(--accent);
+    border-color: var(--accent);
+}
 
 /* ===== Auth pages (login / change password) ===== */
 .auth-wrap {
@@ -128,6 +172,41 @@ header h1 .accent { color: var(--accent); }
     margin-top: 0.5rem;
 }
 .auth-card form button:hover { background: var(--accent-hover); }
+.auth-card form .hint {
+    color: var(--text-muted);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.72rem;
+}
+.auth-sub {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    margin: -0.5rem 0 1.25rem;
+}
+.info-banner {
+    background: rgba(230, 57, 70, 0.08);
+    border-left: 3px solid var(--accent);
+    padding: 0.85rem 1rem;
+    margin: -0.25rem 0 1.5rem;
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+.info-banner strong { color: var(--accent); display: block; margin-bottom: 0.2rem; font-weight: 700; }
+.auth-back {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.78rem;
+}
+.auth-back a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.auth-back a:hover { color: var(--accent); }
 
 /* ===== Layout (sidebar + main) ===== */
 .layout {

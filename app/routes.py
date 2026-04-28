@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template
 from flask_login import login_required
 from sqlalchemy import func
 from app import db
@@ -25,27 +25,6 @@ def index():
         .all()
     )
     return render_template("index.html", ranking=ranking)
-
-
-@bp.route("/manage", methods=["GET", "POST"])
-@login_required
-def manage():
-    if request.method == "POST":
-        nickname = (request.form.get("nickname") or "").strip()
-        nombre_real = (request.form.get("nombre_real") or "").strip() or None
-
-        if not nickname:
-            flash("Nickname vacio.", "error")
-        elif Player.query.filter_by(nickname=nickname).first():
-            flash(f"Player '{nickname}' ya existe.", "error")
-        else:
-            db.session.add(Player(nickname=nickname, nombre_real=nombre_real))
-            db.session.commit()
-            flash(f"Player '{nickname}' agregado.", "success")
-        return redirect(url_for("main.manage"))
-
-    players = Player.query.order_by(Player.nickname).all()
-    return render_template("manage.html", players=players)
 
 
 @bp.route("/history")
