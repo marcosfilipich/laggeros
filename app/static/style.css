@@ -63,6 +63,71 @@ header h1 .accent { color: var(--accent); }
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+.user-bar {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+.user-bar strong { color: var(--text-primary); font-weight: 600; }
+.user-bar a { color: var(--text-secondary); text-decoration: none; }
+.user-bar a:hover { color: var(--accent); }
+
+/* ===== Auth pages (login / change password) ===== */
+.auth-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+.auth-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    width: 100%;
+    max-width: 420px;
+}
+.auth-card h2 {
+    margin: 0 0 1.25rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-primary);
+}
+.auth-card form label {
+    display: block;
+    margin-bottom: 1rem;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+.auth-card form input {
+    display: block;
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    margin-top: 0.35rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+.auth-card form input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+.auth-card form button {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+.auth-card form button:hover { background: var(--accent-hover); }
 
 /* ===== Layout (sidebar + main) ===== */
 .layout {

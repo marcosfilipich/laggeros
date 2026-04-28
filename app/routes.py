@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_required
 from sqlalchemy import func
 from app import db
 from app.models import Player, Punto
@@ -7,6 +8,7 @@ bp = Blueprint("main", __name__)
 
 
 @bp.route("/")
+@login_required
 def index():
     ranking = (
         db.session.query(
@@ -25,26 +27,8 @@ def index():
     return render_template("index.html", ranking=ranking)
 
 
-@bp.route("/report", methods=["GET", "POST"])
-def report():
-    if request.method == "POST":
-        player_id = request.form.get("player_id", type=int)
-        points = request.form.get("points", type=int)
-
-        if not player_id or points is None:
-            flash("Datos invalidos. Revisa los campos.", "error")
-            return redirect(url_for("main.report"))
-
-        db.session.add(Punto(player_id=player_id, points=points))
-        db.session.commit()
-        flash("Puntos registrados.", "success")
-        return redirect(url_for("main.index"))
-
-    players = Player.query.order_by(Player.nickname).all()
-    return render_template("report.html", players=players)
-
-
 @bp.route("/manage", methods=["GET", "POST"])
+@login_required
 def manage():
     if request.method == "POST":
         nickname = (request.form.get("nickname") or "").strip()
@@ -65,6 +49,7 @@ def manage():
 
 
 @bp.route("/history")
+@login_required
 def history():
     reports = Punto.query.order_by(Punto.date_inserted.desc()).limit(100).all()
     return render_template("history.html", reports=reports)

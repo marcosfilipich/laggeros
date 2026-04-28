@@ -1,0 +1,14 @@
+{% extends "base_auth.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<h2>Iniciar <span class="accent">sesion</span></h2>
+<form method="post">
+    <label>Nickname
+        <input type="text" name="nickname" required autofocus autocomplete="username">
+    </label>
+    <label>Password
+        <input type="password" name="password" required autocomplete="current-password">
+    </label>
+    <button type="submit">Entrar</button>
+</form>
+{% endblock %}
