@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(winget install --id GitHub.cli --accept-package-agreements --accept-source-agreements --silent)",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); gh --version)",
+      "PowerShell(pwd; ls -Force 2>$null; if \\(-not \\(Test-Path .\\)\\) { Write-Output 'dir does not exist' })",
+      "Bash(python -m venv .venv)",
+      "Bash(.venv/Scripts/python.exe -m pip install --quiet --upgrade pip)",
+      "Bash(.venv/Scripts/pip.exe install *)",
+      "Bash(.venv/Scripts/python.exe -c \"from app import create_app; app = create_app\\(\\); from app import db; ctx = app.app_context\\(\\); ctx.push\\(\\); from app import models; db.create_all\\(\\); from app.models import Player, Game; [db.session.add\\(Player\\(name=n\\)\\) for n in ['Marcos','Capo1','Capo2'] if not Player.query.filter_by\\(name=n\\).first\\(\\)]; [db.session.add\\(Game\\(name=n\\)\\) for n in ['CS2','Valorant','League of Legends','Fortnite'] if not Game.query.filter_by\\(name=n\\).first\\(\\)]; db.session.commit\\(\\); print\\('DB ready'\\); print\\('Players:', [p.name for p in Player.query.all\\(\\)]\\); print\\('Games:', [g.name for g in Game.query.all\\(\\)]\\)\")",
+      "Bash(.venv/Scripts/python.exe wsgi.py)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:5000/)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:5000/report)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:5000/manage)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:5000/history)",
+      "Bash(curl -s -X POST -d \"player_id=1&game_id=1&lag_ms=350&note=test\" http://localhost:5000/report -o /dev/null -w \"POST report: HTTP %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:5000/)",
+      "Bash(taskkill //F //IM python.exe)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'Initial commit: Flask app skeleton for laggeros ranking *)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" repo create laggeros --public --source=. --description \"Ranking de cuanto laggean los integrantes del grupo capos en sus partidas\" --push)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "WebFetch(domain:www.promiedos.com.ar)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' http://localhost:5000__TRACKED_VAR__)"
+    ]
+  }
+}

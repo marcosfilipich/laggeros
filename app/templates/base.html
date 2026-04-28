@@ -8,17 +8,19 @@
 </head>
 <body>
     <header>
-        <div class="container">
-            <h1><a href="{{ url_for('main.index') }}">Laggeros</a></h1>
-            <p class="tagline">Ranking oficial de los capos que mas laggean</p>
-            <nav>
-                <a href="{{ url_for('main.index') }}">Ranking</a>
-                <a href="{{ url_for('main.report') }}">Reportar lag</a>
-                <a href="{{ url_for('main.history') }}">Historial</a>
-                <a href="{{ url_for('main.manage') }}">Agregar players/juegos</a>
-            </nav>
+        <div class="container header-top">
+            <h1><a href="{{ url_for('main.index') }}">LAG<span class="accent">GEROS</span></a></h1>
+            <span class="tagline">Ranking oficial de los capos que mas laggean</span>
         </div>
     </header>
+    <nav>
+        <div class="container">
+            <a href="{{ url_for('main.index') }}" {% if request.endpoint == 'main.index' %}class="active"{% endif %}>Ranking</a>
+            <a href="{{ url_for('main.report') }}" {% if request.endpoint == 'main.report' %}class="active"{% endif %}>Reportar</a>
+            <a href="{{ url_for('main.history') }}" {% if request.endpoint == 'main.history' %}class="active"{% endif %}>Historial</a>
+            <a href="{{ url_for('main.manage') }}" {% if request.endpoint == 'main.manage' %}class="active"{% endif %}>Players & Juegos</a>
+        </div>
+    </nav>
 
     <main class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -33,9 +35,7 @@
     </main>
 
     <footer>
-        <div class="container">
-            <small>Laggeros - hecho con Flask por los capos</small>
-        </div>
+        <div class="container">Laggeros &middot; hecho por los capos &middot; {{ "now"|default("") }}</div>
     </footer>
 </body>
 </html>

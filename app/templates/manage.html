@@ -1,25 +1,35 @@
 {% extends "base.html" %}
-{% block title %}Agregar players / juegos{% endblock %}
+{% block title %}Players & Juegos{% endblock %}
 {% block content %}
-<section class="card">
-    <h2>Agregar player</h2>
-    <form method="post">
-        <input type="hidden" name="kind" value="player">
-        <label>Nombre <input type="text" name="name" required maxlength="80"></label>
-        <button type="submit">Agregar player</button>
-    </form>
-    <h3>Players actuales</h3>
-    <ul>{% for p in players %}<li>{{ p.name }}</li>{% else %}<li>(ninguno)</li>{% endfor %}</ul>
-</section>
+<div class="grid-2">
+    <div class="section">
+        <div class="section-header">
+            <h2>Agregar <span class="accent">player</span></h2>
+            <span class="section-meta">{{ players|length }} en total</span>
+        </div>
+        <form method="post" class="form-body">
+            <input type="hidden" name="kind" value="player">
+            <label>Nombre <input type="text" name="name" required maxlength="80"></label>
+            <button type="submit">Agregar player</button>
+        </form>
+        <ul class="simple-list">
+            {% for p in players %}<li>{{ p.name }}</li>{% else %}<li class="empty-state" style="padding: 0.85rem;">Ningun player todavia</li>{% endfor %}
+        </ul>
+    </div>
 
-<section class="card">
-    <h2>Agregar juego</h2>
-    <form method="post">
-        <input type="hidden" name="kind" value="game">
-        <label>Nombre <input type="text" name="name" required maxlength="120"></label>
-        <button type="submit">Agregar juego</button>
-    </form>
-    <h3>Juegos actuales</h3>
-    <ul>{% for g in games %}<li>{{ g.name }}</li>{% else %}<li>(ninguno)</li>{% endfor %}</ul>
-</section>
+    <div class="section">
+        <div class="section-header">
+            <h2>Agregar <span class="accent">juego</span></h2>
+            <span class="section-meta">{{ games|length }} en total</span>
+        </div>
+        <form method="post" class="form-body">
+            <input type="hidden" name="kind" value="game">
+            <label>Nombre <input type="text" name="name" required maxlength="120"></label>
+            <button type="submit">Agregar juego</button>
+        </form>
+        <ul class="simple-list">
+            {% for g in games %}<li>{{ g.name }}</li>{% else %}<li class="empty-state" style="padding: 0.85rem;">Ningun juego todavia</li>{% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}

@@ -6,11 +6,8 @@ from app.models import Player, Game, LagReport
 bp = Blueprint("main", __name__)
 
 
-@bp.route("/")
-def index():
-    game_id = request.args.get("game_id", type=int)
-
-    query = (
+def _ranking(game_id=None):
+    q = (
         db.session.query(
             Player.id,
             Player.name,
@@ -21,22 +18,25 @@ def index():
         .join(LagReport, LagReport.player_id == Player.id)
     )
     if game_id:
-        query = query.filter(LagReport.game_id == game_id)
-
-    ranking = (
-        query.group_by(Player.id, Player.name)
+        q = q.filter(LagReport.game_id == game_id)
+    return (
+        q.group_by(Player.id, Player.name)
         .order_by(func.avg(LagReport.lag_ms).desc())
         .all()
     )
 
+
+@bp.route("/")
+def index():
+    overall_ranking = _ranking()
     games = Game.query.order_by(Game.name).all()
-    selected_game = Game.query.get(game_id) if game_id else None
+    per_game = [(g, _ranking(g.id)) for g in games]
+    per_game = [(g, r) for g, r in per_game if r]
 
     return render_template(
         "index.html",
-        ranking=ranking,
-        games=games,
-        selected_game=selected_game,
+        overall_ranking=overall_ranking,
+        per_game=per_game,
     )
 
 

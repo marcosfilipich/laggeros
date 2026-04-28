@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Reportar lag{% endblock %}
 {% block content %}
-<section class="card">
-    <h2>Reportar lag</h2>
+<div class="section">
+    <div class="section-header">
+        <h2>Reportar <span class="accent">lag</span></h2>
+    </div>
     {% if not players or not games %}
-        <p>Necesitas <a href="{{ url_for('main.manage') }}">agregar al menos un player y un juego</a> antes de reportar.</p>
+        <div class="empty-state">
+            Necesitas <a href="{{ url_for('main.manage') }}">agregar al menos un player y un juego</a> antes de reportar.
+        </div>
     {% else %}
-    <form method="post">
+    <form method="post" class="form-body">
         <label>Player
             <select name="player_id" required>
                 <option value="">Elegi un player</option>
@@ -28,5 +32,5 @@
         <button type="submit">Guardar reporte</button>
     </form>
     {% endif %}
-</section>
+</div>
 {% endblock %}
