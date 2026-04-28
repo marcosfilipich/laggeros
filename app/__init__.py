@@ -24,16 +24,27 @@ def create_app():
     @app.cli.command("seed")
     def seed():
         from app.models import Player
+        # nickname, nombre_real
         defaults = [
-            ("Marcos", "Marcos Filipich"),
-            ("Capo1", None),
-            ("Capo2", None),
+            ("Queso", "Marcos"),
+            ("Ghiro", "Ghiro"),
+            ("Ando", "Ando"),
+            ("Pyrook", "Nacho"),
+            ("Tompson", "Tompson"),
+            ("Lommi", "Lommi"),
+            ("Feri", "Federico"),
+            ("Pancho", "Pancho"),
+            ("Marqui", "Marcos"),
+            ("Juani", "Juani"),
+            ("Lucho", "Lucho"),
         ]
+        added = 0
         for nickname, nombre_real in defaults:
             if not Player.query.filter_by(nickname=nickname).first():
                 db.session.add(Player(nickname=nickname, nombre_real=nombre_real))
+                added += 1
         db.session.commit()
-        print("Seeded default players.")
+        print(f"Seeded {added} new player(s) (skipped existing).")
 
     @app.cli.command("reset-db")
     @click.confirmation_option(prompt="Esto borra TODAS las tablas y datos. Seguro?")
