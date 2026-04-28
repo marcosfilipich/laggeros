@@ -183,8 +183,8 @@ nginx -t
 systemctl reload nginx
 
 echo ">>> Configurando UFW..."
-ufw --force allow OpenSSH
-ufw --force allow 'Nginx HTTP'
+ufw allow OpenSSH || true
+ufw allow 'Nginx HTTP' || true
 ufw --force enable
 
 echo ""
