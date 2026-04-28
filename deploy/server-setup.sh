@@ -19,6 +19,10 @@ APP_DIR="${APP_DIR:-/home/${APP_USER}/laggeros}"
 APP_NAME="laggeros"
 SERVER_NAME="${DUCKDNS_DOMAIN}.duckdns.org"
 
+# Si EXTERNAL_DATABASE_URL esta seteado, no instalamos ni configuramos MySQL local.
+# Se asume que la DB ya existe (ej: en un container Docker compartido) y la URL apunta a ella.
+EXTERNAL_DATABASE_URL="${EXTERNAL_DATABASE_URL:-}"
+
 if [ -z "$DUCKDNS_TOKEN" ]; then
     echo "ERROR: setea DUCKDNS_TOKEN. Ejemplo:"
     echo "  sudo DUCKDNS_TOKEN=xxx DUCKDNS_DOMAIN=laggeros bash deploy/server-setup.sh"
@@ -34,38 +38,43 @@ fi
 echo ">>> 1/8 Instalando paquetes del sistema..."
 export DEBIAN_FRONTEND=noninteractive
 apt update -qq
-apt install -y -qq \
-    python3-venv python3-pip python3-dev build-essential \
-    mysql-server default-libmysqlclient-dev pkg-config \
-    nginx \
-    ufw \
-    curl
-
-echo ">>> 2/8 Configurando MySQL..."
-systemctl enable --now mysql
-DB_NAME="laggeros"
-DB_USER="laggeros"
-DB_PASS_FILE="/etc/laggeros/db_password"
-mkdir -p /etc/laggeros
-chmod 750 /etc/laggeros
-
-if [ ! -f "$DB_PASS_FILE" ]; then
-    DB_PASS=$(openssl rand -hex 24)
-    echo "$DB_PASS" > "$DB_PASS_FILE"
-    chmod 600 "$DB_PASS_FILE"
-    echo "    Password de DB generado y guardado en $DB_PASS_FILE"
-else
-    DB_PASS=$(cat "$DB_PASS_FILE")
-    echo "    Reusando password de DB en $DB_PASS_FILE"
+PKGS="python3-venv python3-pip python3-dev build-essential nginx ufw curl"
+if [ -z "$EXTERNAL_DATABASE_URL" ]; then
+    PKGS="$PKGS mysql-server default-libmysqlclient-dev pkg-config"
 fi
+apt install -y -qq $PKGS
 
-mysql --protocol=socket -uroot <<SQL
+if [ -z "$EXTERNAL_DATABASE_URL" ]; then
+    echo ">>> 2/8 Configurando MySQL local..."
+    systemctl enable --now mysql
+    DB_NAME="laggeros"
+    DB_USER="laggeros"
+    DB_PASS_FILE="/etc/laggeros/db_password"
+    mkdir -p /etc/laggeros
+    chmod 750 /etc/laggeros
+
+    if [ ! -f "$DB_PASS_FILE" ]; then
+        DB_PASS=$(openssl rand -hex 24)
+        echo "$DB_PASS" > "$DB_PASS_FILE"
+        chmod 600 "$DB_PASS_FILE"
+        echo "    Password de DB generado y guardado en $DB_PASS_FILE"
+    else
+        DB_PASS=$(cat "$DB_PASS_FILE")
+        echo "    Reusando password de DB en $DB_PASS_FILE"
+    fi
+
+    mysql --protocol=socket -uroot <<SQL
 CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';
 ALTER USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';
 GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost';
 FLUSH PRIVILEGES;
 SQL
+    DATABASE_URL_FOR_ENV="mysql+pymysql://${DB_USER}:${DB_PASS}@localhost/${DB_NAME}"
+else
+    echo ">>> 2/8 Usando EXTERNAL_DATABASE_URL (skip MySQL install)"
+    DATABASE_URL_FOR_ENV="$EXTERNAL_DATABASE_URL"
+fi
 
 echo ">>> 3/8 Configurando DuckDNS..."
 DUCK_DIR="/home/${APP_USER}/duckdns"
@@ -98,7 +107,7 @@ if [ ! -f "$ENV_FILE" ]; then
     cat > "$ENV_FILE" <<EOF
 FLASK_APP=wsgi:app
 SECRET_KEY=${SECRET_KEY}
-DATABASE_URL=mysql+pymysql://${DB_USER}:${DB_PASS}@localhost/${DB_NAME}
+DATABASE_URL=${DATABASE_URL_FOR_ENV}
 EOF
     chown "$APP_USER:$APP_USER" "$ENV_FILE"
     chmod 600 "$ENV_FILE"
@@ -116,10 +125,15 @@ set -a; . .env; set +a
 EOF
 
 echo ">>> 7/8 Configurando systemd service para gunicorn..."
+SERVICE_AFTER="network.target"
+if [ -z "$EXTERNAL_DATABASE_URL" ]; then
+    SERVICE_AFTER="$SERVICE_AFTER mysql.service"
+fi
+
 cat > /etc/systemd/system/${APP_NAME}.service <<EOF
 [Unit]
 Description=Laggeros Flask app (gunicorn)
-After=network.target mysql.service
+After=${SERVICE_AFTER}
 
 [Service]
 User=${APP_USER}
@@ -181,5 +195,9 @@ echo " URL:        http://${SERVER_NAME}"
 echo " App:        ${APP_DIR}"
 echo " Service:    systemctl status ${APP_NAME}"
 echo " Logs:       journalctl -u ${APP_NAME} -f"
-echo " DB:         mysql -u${DB_USER} -p (pass en ${DB_PASS_FILE})"
+if [ -z "$EXTERNAL_DATABASE_URL" ]; then
+    echo " DB:         mysql -u${DB_USER} -p (pass en ${DB_PASS_FILE})"
+else
+    echo " DB:         using EXTERNAL_DATABASE_URL (managed externally)"
+fi
 echo "============================================"
