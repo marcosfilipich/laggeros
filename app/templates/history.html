@@ -12,7 +12,6 @@
             <tr>
                 <th>Fecha (UTC)</th>
                 <th>Player</th>
-                <th>Juego</th>
                 <th class="num">Lag (ms)</th>
                 <th>Nota</th>
             </tr>
@@ -22,7 +21,6 @@
             <tr>
                 <td>{{ r.reported_at.strftime("%Y-%m-%d %H:%M") }}</td>
                 <td class="player">{{ r.player.name }}</td>
-                <td>{{ r.game.name }}</td>
                 <td class="num">{{ r.lag_ms }}</td>
                 <td style="color: var(--text-secondary);">{{ r.note or "" }}</td>
             </tr>

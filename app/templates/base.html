@@ -20,7 +20,7 @@
                 <a href="{{ url_for('main.index') }}" {% if request.endpoint == 'main.index' %}class="active"{% endif %}>Ranking</a>
                 <a href="{{ url_for('main.report') }}" {% if request.endpoint == 'main.report' %}class="active"{% endif %}>Reportar</a>
                 <a href="{{ url_for('main.history') }}" {% if request.endpoint == 'main.history' %}class="active"{% endif %}>Historial</a>
-                <a href="{{ url_for('main.manage') }}" {% if request.endpoint == 'main.manage' %}class="active"{% endif %}>Players & Juegos</a>
+                <a href="{{ url_for('main.manage') }}" {% if request.endpoint == 'main.manage' %}class="active"{% endif %}>Players</a>
             </nav>
         </aside>
 

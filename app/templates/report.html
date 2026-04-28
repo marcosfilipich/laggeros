@@ -5,9 +5,9 @@
     <div class="section-header">
         <h2>Reportar <span class="accent">lag</span></h2>
     </div>
-    {% if not players or not games %}
+    {% if not players %}
         <div class="empty-state">
-            Necesitas <a href="{{ url_for('main.manage') }}">agregar al menos un player y un juego</a> antes de reportar.
+            Necesitas <a href="{{ url_for('main.manage') }}">agregar al menos un player</a> antes de reportar.
         </div>
     {% else %}
     <form method="post" class="form-body">
@@ -15,12 +15,6 @@
             <select name="player_id" required>
                 <option value="">Elegi un player</option>
                 {% for p in players %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
-            </select>
-        </label>
-        <label>Juego
-            <select name="game_id" required>
-                <option value="">Elegi un juego</option>
-                {% for g in games %}<option value="{{ g.id }}">{{ g.name }}</option>{% endfor %}
             </select>
         </label>
         <label>Lag (ms)

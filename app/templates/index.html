@@ -5,9 +5,9 @@
 <div class="section">
     <div class="section-header">
         <h2>Tabla <span class="accent">General</span></h2>
-        <span class="section-meta">Todos los juegos, todos los reportes</span>
+        <span class="section-meta">Ranking general de lag</span>
     </div>
-    {% if overall_ranking %}
+    {% if ranking %}
     <table class="standings">
         <thead>
             <tr>
@@ -19,7 +19,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for row in overall_ranking %}
+            {% for row in ranking %}
             <tr>
                 <td class="pos">{{ loop.index }}</td>
                 <td class="player">{{ row.name }}</td>
@@ -36,40 +36,5 @@
     </div>
     {% endif %}
 </div>
-
-{% if per_game %}
-<div class="grid-2">
-    {% for game, ranking in per_game %}
-    <div class="section">
-        <div class="section-header">
-            <h2>{{ game.name }}</h2>
-            <span class="section-meta">{{ ranking|length }} player{% if ranking|length != 1 %}s{% endif %}</span>
-        </div>
-        <table class="standings">
-            <thead>
-                <tr>
-                    <th class="num">#</th>
-                    <th>Player</th>
-                    <th class="num">Lag prom</th>
-                    <th class="num">Peor</th>
-                    <th class="num">Rep.</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in ranking %}
-                <tr>
-                    <td class="pos">{{ loop.index }}</td>
-                    <td class="player">{{ row.name }}</td>
-                    <td class="num">{{ "%.0f"|format(row.avg_lag) }}</td>
-                    <td class="num">{{ row.max_lag }}</td>
-                    <td class="num">{{ row.report_count }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
 
 {% endblock %}

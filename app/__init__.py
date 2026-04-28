@@ -1,3 +1,4 @@
+import click
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -21,16 +22,20 @@ def create_app():
 
     @app.cli.command("seed")
     def seed():
-        from app.models import Player, Game
+        from app.models import Player
         defaults_players = ["Marcos", "Capo1", "Capo2"]
-        defaults_games = ["CS2", "Valorant", "League of Legends", "Fortnite"]
         for name in defaults_players:
             if not Player.query.filter_by(name=name).first():
                 db.session.add(Player(name=name))
-        for name in defaults_games:
-            if not Game.query.filter_by(name=name).first():
-                db.session.add(Game(name=name))
         db.session.commit()
-        print("Seeded default players and games.")
+        print("Seeded default players.")
+
+    @app.cli.command("reset-db")
+    @click.confirmation_option(prompt="Esto borra TODAS las tablas y datos. Seguro?")
+    def reset_db():
+        from app import models  # noqa: F401
+        db.drop_all()
+        db.create_all()
+        print("Database reset (all tables dropped and recreated).")
 
     return app
