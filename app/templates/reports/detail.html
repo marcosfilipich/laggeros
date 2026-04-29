@@ -12,7 +12,7 @@
     <div class="report-meta">
         <div><span class="meta-label">Reporter</span> <strong>{{ report.reporter.nickname }}</strong></div>
         <div><span class="meta-label">Target</span> <strong>{{ report.target.nickname }}</strong>{% if report.target.nombre_real %} ({{ report.target.nombre_real }}){% endif %}</div>
-        <div><span class="meta-label">Puntos</span> <strong>{{ report.points }}</strong></div>
+        <div><span class="meta-label">Puntos</span> <span class="points-pill points-pill-lg" style="--points: {{ report.points }};">{{ report.points }}</span></div>
         <div><span class="meta-label">Creado</span> {{ report.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
     </div>
 
