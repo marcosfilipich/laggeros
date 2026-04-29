@@ -27,7 +27,7 @@
                 <td style="color: var(--text-secondary);">{{ row.nombre_real or "-" }}</td>
                 <td class="num">{{ row.total_points }}</td>
                 <td class="num">{{ row.report_count }}</td>
-                <td style="color: var(--text-secondary);">{% if row.last_report %}{{ row.last_report.strftime("%Y-%m-%d %H:%M") }}{% else %}-{% endif %}</td>
+                <td style="color: var(--text-secondary);">{{ row.last_report | relative_days }}</td>
             </tr>
             {% endfor %}
         </tbody>

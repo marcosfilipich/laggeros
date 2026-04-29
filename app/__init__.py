@@ -1,4 +1,5 @@
 import secrets
+from datetime import datetime
 import click
 from flask import Flask, redirect, request, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -39,6 +40,17 @@ def create_app():
     app.register_blueprint(routes.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(reports.bp)
+
+    @app.template_filter("relative_days")
+    def relative_days(dt):
+        if dt is None:
+            return "-"
+        days = (datetime.utcnow() - dt).days
+        if days <= 0:
+            return "hace menos de 1 dia"
+        if days == 1:
+            return "hace 1 dia"
+        return f"hace {days} dias"
 
     @app.cli.command("init-db")
     def init_db():
