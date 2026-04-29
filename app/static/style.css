@@ -233,16 +233,28 @@ header h1 .accent { color: var(--accent); }
     flex-direction: column;
     position: sticky;
     top: 0;
-    min-height: 100vh;
+    padding-bottom: 48px;  /* deja espacio para el item fijo del fondo */
 }
+/* About anclado al borde inferior del viewport, alineado con la sidebar (220px) */
 .sidebar nav .pinned-bottom {
-    margin-top: auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 220px;
+    background: var(--bg-secondary);
     border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
     border-bottom: none;
+    z-index: 10;
 }
 @media (max-width: 768px) {
-    .sidebar nav { min-height: 0; }
-    .sidebar nav .pinned-bottom { margin-top: 0; border-top: none; border-bottom: 1px solid var(--border); }
+    .sidebar nav { padding-bottom: 0; }
+    .sidebar nav .pinned-bottom {
+        position: static;
+        width: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
 }
 .sidebar nav a {
     display: flex;
