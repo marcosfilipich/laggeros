@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Apelaciones{% endblock %}
+{% block content %}
+{% include "appeals/_subnav.html" %}
+
+<div class="section">
+    <div class="section-header">
+        <h2>Apelaciones <span class="accent">solicitadas</span></h2>
+        <span class="section-meta">{{ appeals|length }} en total</span>
+    </div>
+    {% if appeals %}
+    <table class="standings">
+        <thead>
+            <tr>
+                <th class="num">#</th>
+                <th>Apelante</th>
+                <th>Reporte</th>
+                <th class="center">Puntos</th>
+                <th class="center">Estado</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in appeals %}
+            <tr onclick="location.href='{{ url_for('appeals.detail', appeal_id=a.id) }}'" style="cursor:pointer">
+                <td class="pos">{{ a.id }}</td>
+                <td class="player">{{ a.appealer.nickname }}</td>
+                <td>
+                    <a href="{{ url_for('reports.detail', report_id=a.report.id) }}" onclick="event.stopPropagation()" style="color: var(--accent);">#{{ a.report.id }}</a>
+                </td>
+                <td class="center"><span class="points-pill" style="--points: {{ a.report.points }};">{{ a.report.points }}</span></td>
+                <td class="center"><span class="badge badge-{{ a.status }}">{{ a.status }}</span></td>
+                <td style="color: var(--text-secondary);">{{ a.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        Todavia no hay apelaciones. Si te aprobaron un reclamo con solo 2 votos SI, podes <a href="{{ url_for('appeals.new_appeal') }}">apelarlo</a>.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

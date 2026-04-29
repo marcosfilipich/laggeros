@@ -1,0 +1,4 @@
+<div class="subnav">
+    <a href="{{ url_for('appeals.list_appeals') }}" class="subnav-item {% if current == 'list' %}active{% endif %}">Apelaciones solicitadas</a>
+    <a href="{{ url_for('appeals.new_appeal') }}" class="subnav-item subnav-cta {% if current == 'new' %}active{% endif %}">+ Generar apelacion</a>
+</div>

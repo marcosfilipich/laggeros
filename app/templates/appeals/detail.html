@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Apelacion #{{ appeal.id }}{% endblock %}
+{% block content %}
+{% include "appeals/_subnav.html" %}
+
+<div class="section">
+    <div class="section-header">
+        <h2>Apelacion <span class="accent">#{{ appeal.id }}</span></h2>
+        <span class="badge badge-{{ appeal.status }}">{{ appeal.status }}</span>
+    </div>
+
+    <div class="report-meta">
+        <div><span class="meta-label">Apelante</span> <strong>{{ appeal.appealer.nickname }}</strong></div>
+        <div><span class="meta-label">Reclamo original</span>
+            <a href="{{ url_for('reports.detail', report_id=appeal.report.id) }}" style="color: var(--accent);">#{{ appeal.report.id }}</a>
+            ({{ appeal.report.points }} pts &middot; reporter {{ appeal.report.reporter.nickname }})
+        </div>
+        <div><span class="meta-label">Creada</span> {{ appeal.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
+        {% if appeal.resolved_at %}
+        <div><span class="meta-label">Resuelta</span> {{ appeal.resolved_at.strftime("%Y-%m-%d %H:%M") }}</div>
+        {% endif %}
+    </div>
+
+    <div class="report-block">
+        <div class="block-title">Argumento del apelante</div>
+        <div class="block-body">{{ appeal.description }}</div>
+    </div>
+
+    <div class="report-block">
+        <div class="block-title">Quien NO puede votar en esta apelacion</div>
+        <div class="reviewer-chips">
+            <span class="reviewer-chip" title="Reporter del reclamo original">{{ appeal.report.reporter.nickname }} <span class="chip-mark" style="background: var(--text-muted); color: var(--bg-primary);">reporter</span></span>
+            <span class="reviewer-chip" title="Apelante">{{ appeal.appealer.nickname }} <span class="chip-mark" style="background: var(--text-muted); color: var(--bg-primary);">apelante</span></span>
+            {% for u in original_yes_voters %}
+            <span class="reviewer-chip" title="Voto SI en el reclamo original">{{ u.nickname }} <span class="chip-mark" style="background: #2ea043; color: white;">si original</span></span>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if appeal.status == 'pending' %}
+    <div class="report-block">
+        <div class="block-title">Progreso</div>
+        <div class="progress-rows">
+            <div class="progress-row{% if progress.yes_count >= progress.yes_threshold %} progress-met{% endif %}">
+                <span class="progress-label">Votos SI (apelacion aprueba al llegar)</span>
+                <span class="progress-value">{{ progress.yes_count }} / {{ progress.yes_threshold }}</span>
+            </div>
+            <div class="progress-row{% if progress.no_count >= progress.no_threshold %} progress-met{% endif %}">
+                <span class="progress-label">Votos NO (apelacion se rechaza al llegar)</span>
+                <span class="progress-value">{{ progress.no_count }} / {{ progress.no_threshold }}</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="report-block">
+        <div class="block-title">Tu voto</div>
+        {% if my_vote %}
+            <div class="my-vote-current">
+                Tu voto:
+                <span class="vote-pill vote-{{ my_vote.vote }}">{{ my_vote.vote }}</span>
+                {% if my_vote.comment %}<span class="my-vote-comment">- "{{ my_vote.comment }}"</span>{% endif %}
+                <span class="attach-meta">{{ my_vote.voted_at.strftime("%Y-%m-%d %H:%M") }}</span>
+            </div>
+            <div class="empty-inline">El voto ya quedo registrado y no se puede cambiar.</div>
+        {% elif not can_vote %}
+            <div class="empty-inline">{{ cant_vote_reason }}</div>
+        {% else %}
+            <div class="vote-warning">Una vez votado no vas a poder cambiar tu voto.</div>
+            <form method="post" action="{{ url_for('appeals.vote', appeal_id=appeal.id) }}" class="vote-form">
+                <textarea name="comment" placeholder="Comentario (opcional, max 500)" maxlength="500" rows="2"></textarea>
+                <div class="vote-buttons">
+                    <button type="submit" name="vote" value="yes" class="btn-vote btn-vote-yes"
+                            onclick="return confirm('Confirmas que votas SI? Una vez confirmado no se puede cambiar.');">
+                        Votar SI
+                    </button>
+                    <button type="submit" name="vote" value="no" class="btn-vote btn-vote-no"
+                            onclick="return confirm('Confirmas que votas NO? Una vez confirmado no se puede cambiar.');">
+                        Votar NO
+                    </button>
+                </div>
+            </form>
+        {% endif %}
+    </div>
+
+    <div class="report-block">
+        <div class="block-title">Votos ({{ appeal.votes|length }})</div>
+        {% if appeal.votes %}
+        <ul class="vote-list">
+            {% for v in appeal.votes|sort(attribute='voted_at', reverse=true) %}
+            <li>
+                <span class="vote-pill vote-{{ v.vote }}">{{ v.vote }}</span>
+                <strong>{{ v.usuario.nickname }}</strong>
+                {% if v.comment %}<span class="vote-comment">- {{ v.comment }}</span>{% endif %}
+                <span class="attach-meta">{{ v.voted_at.strftime("%Y-%m-%d %H:%M") }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty-inline">Sin votos todavia.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

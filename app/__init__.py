@@ -51,10 +51,11 @@ def create_app():
             return
         return redirect(url_for("main.about_ranking"))
 
-    from app import routes, auth, reports
+    from app import routes, auth, reports, appeals
     app.register_blueprint(routes.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(reports.bp)
+    app.register_blueprint(appeals.bp)
 
     @app.template_filter("relative_days")
     def relative_days(dt):

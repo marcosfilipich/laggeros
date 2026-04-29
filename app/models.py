@@ -116,3 +116,36 @@ class Comment(db.Model):
     usuario = db.relationship("Usuario")
     report = db.relationship("Report", backref=db.backref("comments", lazy=True, cascade="all, delete-orphan"))
     parent = db.relationship("Comment", remote_side=[id], backref="children")
+
+
+class Appeal(db.Model):
+    __tablename__ = "appeals"
+
+    id = db.Column(db.Integer, primary_key=True)
+    report_id = db.Column(db.Integer, db.ForeignKey("reports.id"), nullable=False, unique=True)
+    appealer_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(20), nullable=False, default="pending")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    resolved_at = db.Column(db.DateTime, nullable=True)
+
+    report = db.relationship("Report", backref=db.backref("appeal", uselist=False))
+    appealer = db.relationship("Usuario")
+    votes = db.relationship(
+        "AppealVote", backref="appeal", cascade="all, delete-orphan", lazy=True
+    )
+
+
+class AppealVote(db.Model):
+    __tablename__ = "appeal_votes"
+
+    id = db.Column(db.Integer, primary_key=True)
+    appeal_id = db.Column(db.Integer, db.ForeignKey("appeals.id"), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
+    vote = db.Column(db.String(10), nullable=False)
+    comment = db.Column(db.Text, nullable=True)
+    voted_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    usuario = db.relationship("Usuario")
+
+    __table_args__ = (db.UniqueConstraint("appeal_id", "usuario_id", name="uq_appeal_vote"),)

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Generar apelacion{% endblock %}
+{% block content %}
+{% include "appeals/_subnav.html" %}
+
+<div class="section">
+    <div class="section-header">
+        <h2>Generar <span class="accent">apelacion</span></h2>
+        <span class="section-meta">Apela un reclamo aprobado con solo 2 votos SI</span>
+    </div>
+
+    {% if not eligible %}
+    <div class="empty-state">
+        No tenes reportes apelables. Solo se pueden apelar reclamos <span class="badge badge-approved">approved</span> con exactamente 2 votos SI en total y en los que vos seas el target.
+    </div>
+    {% else %}
+    <form method="post" class="form-body">
+        <label>Reclamo a apelar
+            <select name="report_id" required>
+                <option value="">Elegi un reclamo</option>
+                {% for r in eligible %}
+                <option value="{{ r.id }}">
+                    #{{ r.id }} &middot; reportado por {{ r.reporter.nickname }} &middot; {{ r.points }} puntos &middot; "{{ r.description[:80] }}{% if r.description|length > 80 %}...{% endif %}"
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>Por que apelas?
+            <textarea name="description" required minlength="5" maxlength="2000" rows="4" placeholder="Explicales a los votantes por que el reclamo original es injusto"></textarea>
+        </label>
+
+        <div class="vote-warning">
+            Recordatorio: si la apelacion es rechazada (2 NOs), te suman 3 puntos al ranking. Si es aprobada (5 SIs), se revierten los puntos del reclamo + 1 a favor.
+        </div>
+
+        <button type="submit">Crear apelacion</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}
