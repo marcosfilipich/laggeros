@@ -1146,7 +1146,22 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
     background: var(--bg-tertiary);
     border-left: 3px solid var(--text-muted);
     font-size: 0.85rem;
+    position: relative;
+    overflow: hidden;
 }
+.progress-row::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--progress, 0%);
+    background: rgba(46, 160, 67, 0.18);
+    border-right: 1px solid rgba(46, 160, 67, 0.5);
+    z-index: 0;
+    transition: width 0.6s ease;
+}
+.progress-row > * { position: relative; z-index: 1; }
 .progress-row.progress-met {
     border-left-color: #2ea043;
     background: rgba(46, 160, 67, 0.12);

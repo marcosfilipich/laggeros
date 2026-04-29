@@ -263,18 +263,24 @@ def detail(report_id):
     no_voter_ids = {v.usuario_id for v in rep.votes if v.vote == "no"}
     reviewer_ids = {r.usuario_id for r in rep.reviewers}
 
+    def _pct(num, den):
+        return 0 if not den else min(100, int(num * 100 / den))
+
+    yes_count = len(yes_voter_ids)
+    no_count = len(no_voter_ids)
+    reviewers_yes = len(reviewer_ids & yes_voter_ids)
+    total_reviewers = len(reviewer_ids)
+
     progress = {
-        "yes_count": len(yes_voter_ids),
-        "no_count": len(no_voter_ids),
-        "reviewers_yes": len(reviewer_ids & yes_voter_ids),
-        "reviewers_no": len(reviewer_ids & no_voter_ids),
-        "total_reviewers": len(reviewer_ids),
+        "yes_count": yes_count,
+        "no_count": no_count,
+        "reviewers_yes": reviewers_yes,
+        "total_reviewers": total_reviewers,
         "total_yes_threshold": TOTAL_YES_THRESHOLD,
         "no_reject_threshold": NO_REJECTION_THRESHOLD,
-        "majority_reject_met": (
-            bool(reviewer_ids & no_voter_ids)
-            and len(no_voter_ids) > len(yes_voter_ids)
-        ),
+        "reviewers_pct": _pct(reviewers_yes, total_reviewers),
+        "yes_pct": _pct(yes_count, TOTAL_YES_THRESHOLD),
+        "no_pct": _pct(no_count, NO_REJECTION_THRESHOLD),
     }
 
     my_vote = next((v for v in rep.votes if v.usuario_id == current_user.id), None)
@@ -429,24 +435,12 @@ def _check_and_apply_decision(rep):
         _apply_approval(rep)
         return {"status": "approved", "reason": f"{len(yes_voter_ids)} players votaron si"}
 
-    # Rechazo - regla 1: >= 5 NOs en total
+    # Rechazo: >= 5 NOs en total
     if len(no_voter_ids) >= NO_REJECTION_THRESHOLD:
         penalty = _apply_rejection(rep)
         return {
             "status": "rejected",
             "reason": f"{len(no_voter_ids)} players votaron no",
-            "penalty_applied": penalty,
-        }
-
-    # Rechazo - regla 2: al menos 1 reviewer voto NO y la mayoria de votantes
-    # tambien voto NO (NO > YES estricto). Cubre el caso de "consenso temprano"
-    # cuando el report es claramente injusto pero todavia no llegamos a 5 NOs.
-    if (reviewer_ids & no_voter_ids) and len(no_voter_ids) > len(yes_voter_ids):
-        penalty = _apply_rejection(rep)
-        return {
-            "status": "rejected",
-            "reason": f"un reviewer voto NO y la mayoria de votantes tambien "
-                      f"({len(no_voter_ids)} no vs {len(yes_voter_ids)} si)",
             "penalty_applied": penalty,
         }
 

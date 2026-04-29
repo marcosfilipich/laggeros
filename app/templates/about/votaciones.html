@@ -24,10 +24,9 @@
         </ul>
         <p>Si se aprueba, los puntos del reporte se aplican automaticamente al target.</p>
 
-        <p><strong>Condiciones de rechazo</strong> (reporte pasa a <span class="badge badge-rejected">rejected</span>) — alcanza con cualquiera de las dos:</p>
+        <p><strong>Condicion de rechazo</strong> (reporte pasa a <span class="badge badge-rejected">rejected</span>):</p>
         <ul>
-            <li><strong>5 o mas votos NO</strong> en total, o</li>
-            <li><strong>al menos 1 reviewer voto NO y la mayoria de los votos son NO</strong> (NO &gt; SI estricto). Esta segunda regla cubre el caso de "consenso temprano": cuando el reporte es claramente injusto pero todavia no llegamos a 5 NOs.</li>
+            <li><strong>5 o mas votos NO</strong> en total.</li>
         </ul>
         <p>Si se rechaza, no se aplican puntos al target. El contador de reportes falsos del reporter se incrementa, y al llegar a 3 se reinicia con un castigo de 3 puntos al reporter (ver <a href="{{ url_for('main.about_reportes') }}">Reportes</a>).</p>
 
