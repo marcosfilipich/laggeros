@@ -22,6 +22,9 @@ def _comment_counts():
     return dict(rows)
 
 TOTAL_YES_THRESHOLD = 6
+NO_REJECTION_THRESHOLD = 5            # >= 5 votos NO -> rechazado
+FALSE_REPORTS_THRESHOLD = 3           # cada N reportes rechazados...
+FALSE_REPORTS_PENALTY_POINTS = 3      # ...el reporter suma estos puntos
 
 bp = Blueprint("reports", __name__, url_prefix="/reports")
 
@@ -312,22 +315,32 @@ def vote(report_id):
     ))
     db.session.commit()
 
-    reason = _check_and_apply_approval(rep)
-    if reason:
+    decision = _check_and_apply_decision(rep)
+    if decision and decision["status"] == "approved":
         flash(
-            f"Voto registrado. Reporte aprobado ({reason}). "
+            f"Voto registrado. Reporte aprobado ({decision['reason']}). "
             f"Se aplicaron {rep.points} puntos a {rep.target.nickname}.",
             "success",
         )
+    elif decision and decision["status"] == "rejected":
+        msg = f"Voto registrado. Reporte rechazado ({decision['reason']})."
+        if decision.get("penalty_applied"):
+            msg += (
+                f" {rep.reporter.nickname} llego a {FALSE_REPORTS_THRESHOLD} reportes rechazados: "
+                f"se le sumaron {FALSE_REPORTS_PENALTY_POINTS} puntos y el contador volvio a 0."
+            )
+        flash(msg, "success")
     else:
         flash("Voto registrado.", "success")
 
     return redirect(url_for("reports.detail", report_id=rep.id))
 
 
-def _check_and_apply_approval(rep):
-    """Si se cumple alguna condicion de aprobacion, marca approved y suma Puntos.
-    Devuelve string con el motivo si aprobo, None si no."""
+def _check_and_apply_decision(rep):
+    """Si se cumple alguna condicion de aprobacion o rechazo, actualiza el reporte y
+    aplica las consecuencias (puntos al target en aprobacion, contador + posible
+    penalty al reporter en rechazo). Devuelve dict con status/reason/penalty_applied
+    o None si el reporte sigue pending."""
     if rep.status != "pending":
         return None
 
@@ -335,18 +348,31 @@ def _check_and_apply_approval(rep):
         row[0] for row in db.session.query(Vote.usuario_id)
         .filter(Vote.report_id == rep.id, Vote.vote == "yes").all()
     }
+    no_voter_ids = {
+        row[0] for row in db.session.query(Vote.usuario_id)
+        .filter(Vote.report_id == rep.id, Vote.vote == "no").all()
+    }
     reviewer_ids = {
         row[0] for row in db.session.query(ReportReviewer.usuario_id)
         .filter(ReportReviewer.report_id == rep.id).all()
     }
 
+    # Aprobacion
     if reviewer_ids and reviewer_ids.issubset(yes_voter_ids):
         _apply_approval(rep)
-        return "todos los reviewers votaron si"
-
+        return {"status": "approved", "reason": "todos los reviewers votaron si"}
     if len(yes_voter_ids) >= TOTAL_YES_THRESHOLD:
         _apply_approval(rep)
-        return f"{len(yes_voter_ids)} players votaron si"
+        return {"status": "approved", "reason": f"{len(yes_voter_ids)} players votaron si"}
+
+    # Rechazo
+    if len(no_voter_ids) >= NO_REJECTION_THRESHOLD:
+        penalty = _apply_rejection(rep)
+        return {
+            "status": "rejected",
+            "reason": f"{len(no_voter_ids)} players votaron no",
+            "penalty_applied": penalty,
+        }
 
     return None
 
@@ -355,6 +381,22 @@ def _apply_approval(rep):
     rep.status = "approved"
     db.session.add(Punto(player_id=rep.target_id, points=rep.points))
     db.session.commit()
+
+
+def _apply_rejection(rep):
+    """Marca el reporte como rejected, incrementa el contador de reportes falsos
+    del reporter; si el contador llega al threshold lo resetea y suma puntos al
+    reporter como castigo. Devuelve True si aplico el penalty."""
+    rep.status = "rejected"
+    reporter = Usuario.query.get(rep.reporter_id)
+    reporter.reportes_falsos_count = (reporter.reportes_falsos_count or 0) + 1
+    penalty_applied = False
+    if reporter.reportes_falsos_count >= FALSE_REPORTS_THRESHOLD:
+        reporter.reportes_falsos_count = 0
+        db.session.add(Punto(player_id=reporter.id, points=FALSE_REPORTS_PENALTY_POINTS))
+        penalty_applied = True
+    db.session.commit()
+    return penalty_applied
 
 
 @bp.route("/uploads/<filename>")

@@ -13,6 +13,7 @@ class Usuario(db.Model, UserMixin):
     password_hash = db.Column(db.String(255), nullable=True)
     must_change_password = db.Column(db.Boolean, nullable=False, default=True)
     rol = db.Column(db.String(20), nullable=False, default="player")
+    reportes_falsos_count = db.Column(db.Integer, nullable=False, default=0)
 
     puntos = db.relationship(
         "Punto", backref="player", lazy=True, cascade="all, delete-orphan"
