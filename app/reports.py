@@ -7,8 +7,19 @@ from flask import (
     current_app, send_from_directory, abort,
 )
 from flask_login import login_required, current_user
+from sqlalchemy import func
 from app import db
 from app.models import Usuario, Report, ReportReviewer, ReportAttachment, Vote, Punto, Comment
+
+
+def _comment_counts():
+    """Devuelve dict {report_id: count} con la cantidad de comentarios por reporte."""
+    rows = (
+        db.session.query(Comment.report_id, func.count(Comment.id))
+        .group_by(Comment.report_id)
+        .all()
+    )
+    return dict(rows)
 
 TOTAL_YES_THRESHOLD = 6
 
@@ -46,7 +57,8 @@ def active_reports():
         .all()
     )
     return render_template("reports/list.html", reports=reports, current="active",
-                           empty_msg="No hay reportes activos.")
+                           empty_msg="No hay reportes activos.",
+                           comment_counts=_comment_counts())
 
 
 @bp.route("/pending")
@@ -68,6 +80,7 @@ def pending_reports():
         reports=reports,
         current="pending",
         empty_msg="No tenes reportes pendientes para revisar.",
+        comment_counts=_comment_counts(),
     )
 
 
@@ -80,7 +93,8 @@ def closed_reports():
         .all()
     )
     return render_template("reports/list.html", reports=reports, current="closed",
-                           empty_msg="No hay reportes cerrados todavia.")
+                           empty_msg="No hay reportes cerrados todavia.",
+                           comment_counts=_comment_counts())
 
 
 @bp.route("/new", methods=["GET", "POST"])
