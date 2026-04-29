@@ -60,18 +60,26 @@
 
     {% if report.status == 'pending' %}
     <div class="report-block">
-        <div class="block-title">Progreso de aprobacion</div>
+        <div class="block-title">Progreso</div>
         <div class="progress-rows">
             <div class="progress-row{% if progress.total_reviewers > 0 and progress.reviewers_yes == progress.total_reviewers %} progress-met{% endif %}">
-                <span class="progress-label">Reviewers que dijeron SI</span>
+                <span class="progress-label">Aprueba: todos los reviewers SI</span>
                 <span class="progress-value">{{ progress.reviewers_yes }} / {{ progress.total_reviewers }}</span>
             </div>
             <div class="progress-row{% if progress.yes_count >= progress.total_yes_threshold %} progress-met{% endif %}">
-                <span class="progress-label">Total de votos SI (de cualquier player)</span>
+                <span class="progress-label">Aprueba: total {{ progress.total_yes_threshold }}+ SI</span>
                 <span class="progress-value">{{ progress.yes_count }} / {{ progress.total_yes_threshold }}</span>
             </div>
+            <div class="progress-row{% if progress.no_count >= progress.no_reject_threshold %} progress-met-reject{% endif %}">
+                <span class="progress-label">Rechaza: total {{ progress.no_reject_threshold }}+ NO</span>
+                <span class="progress-value">{{ progress.no_count }} / {{ progress.no_reject_threshold }}</span>
+            </div>
+            <div class="progress-row{% if progress.majority_reject_met %} progress-met-reject{% endif %}">
+                <span class="progress-label">Rechaza: 1+ reviewer NO y mayoria votos NO</span>
+                <span class="progress-value">{% if progress.majority_reject_met %}cumplida{% else %}{{ progress.reviewers_no }} reviewer(s) NO &middot; {{ progress.no_count }} no / {{ progress.yes_count }} si{% endif %}</span>
+            </div>
         </div>
-        <div class="progress-help">Se aprueba cuando se cumple <strong>cualquiera</strong> de las dos condiciones.</div>
+        <div class="progress-help">Cualquiera de las 2 primeras aprueba; cualquiera de las 2 ultimas rechaza.</div>
     </div>
     {% endif %}
 

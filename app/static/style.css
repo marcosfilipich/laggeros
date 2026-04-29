@@ -1152,6 +1152,11 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
     background: rgba(46, 160, 67, 0.12);
     color: #7fdb98;
 }
+.progress-row.progress-met-reject {
+    border-left-color: #f85149;
+    background: rgba(248, 81, 73, 0.12);
+    color: #ff8a8a;
+}
 .progress-label { color: var(--text-secondary); }
 .progress-row.progress-met .progress-label { color: #7fdb98; }
 .progress-value {
@@ -1163,6 +1168,11 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
     content: " OK";
     margin-left: 0.4rem;
     color: #7fdb98;
+}
+.progress-row.progress-met-reject .progress-value::after {
+    content: " OK";
+    margin-left: 0.4rem;
+    color: #ff8a8a;
 }
 .progress-help {
     font-size: 0.75rem;
