@@ -41,6 +41,8 @@ def logout():
 @bp.route("/change-password", methods=["GET", "POST"])
 @login_required
 def change_password():
+    forced = current_user.must_change_password
+
     if request.method == "POST":
         current_pw = request.form.get("current_password") or ""
         new_pw = request.form.get("new_password") or ""
@@ -62,6 +64,7 @@ def change_password():
         current_user.must_change_password = False
         db.session.commit()
         flash("Password actualizada.", "success")
-        return redirect(url_for("main.index"))
+        return redirect(url_for("auth.change_password"))
 
-    return render_template("auth/change_password.html", forced=current_user.must_change_password)
+    template = "auth/change_password_forced.html" if forced else "auth/change_password.html"
+    return render_template(template)

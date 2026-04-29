@@ -16,7 +16,6 @@
                         <span class="user-chip-dot"></span>
                         {{ current_user.nickname }}
                     </span>
-                    <a href="{{ url_for('auth.change_password') }}" class="user-btn" title="Cambiar password">Password</a>
                     <a href="{{ url_for('auth.logout') }}" class="user-btn user-btn-danger" title="Cerrar sesion">Salir</a>
                 </div>
             {% else %}
@@ -30,6 +29,7 @@
             <nav>
                 <a href="{{ url_for('main.index') }}" {% if request.endpoint == 'main.index' %}class="active"{% endif %}>Ranking</a>
                 <a href="{{ url_for('main.history') }}" {% if request.endpoint == 'main.history' %}class="active"{% endif %}>Historial</a>
+                <a href="{{ url_for('auth.change_password') }}" {% if request.endpoint == 'auth.change_password' %}class="active"{% endif %}>Configuracion</a>
             </nav>
         </aside>
 

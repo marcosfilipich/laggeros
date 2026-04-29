@@ -403,6 +403,14 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
     margin-top: 0.5rem;
 }
 .form-body button:hover { background: var(--accent-hover); }
+.form-body .hint {
+    color: var(--text-muted);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.72rem;
+}
+.settings-form { max-width: 420px; }
 
 ul.simple-list {
     list-style: none;
