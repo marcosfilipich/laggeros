@@ -145,9 +145,17 @@
         {% set kids = children_by_parent.get(c.id, []) %}
         {% if kids %}
         <div class="comment-children">
-            {% for child in kids %}
+            {% for child in kids[:3] %}
                 {{ render_comment(child, children_by_parent) }}
             {% endfor %}
+            {% if kids|length > 3 %}
+            <button type="button" class="show-more-btn" data-target="more-{{ c.id }}" onclick="toggleMore(this)">Mostrar {{ kids|length - 3 }} respuesta{% if kids|length - 3 != 1 %}s{% endif %} mas</button>
+            <div class="comment-children-more" id="more-{{ c.id }}" style="display:none">
+                {% for child in kids[3:] %}
+                    {{ render_comment(child, children_by_parent) }}
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
         {% endif %}
     </div>
@@ -174,6 +182,12 @@
 </div>
 
 <script>
+function toggleMore(btn) {
+    var t = document.getElementById(btn.dataset.target);
+    if (!t) return;
+    t.style.display = '';
+    btn.style.display = 'none';
+}
 function toggleReply(id) {
     var f = document.getElementById('reply-form-' + id);
     if (!f) return;

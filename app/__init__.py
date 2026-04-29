@@ -36,6 +36,21 @@ def create_app():
             return
         return redirect(url_for("auth.change_password"))
 
+    @app.before_request
+    def force_onboarding():
+        if not current_user.is_authenticated:
+            return
+        if current_user.must_change_password:
+            return  # otro before_request ya redirige a cambiar password
+        if current_user.has_seen_about:
+            return
+        ep = request.endpoint or ""
+        if ep == "main.about" or ep.startswith("main.about_"):
+            return
+        if ep == "auth.logout" or ep == "static":
+            return
+        return redirect(url_for("main.about_ranking"))
+
     from app import routes, auth, reports
     app.register_blueprint(routes.bp)
     app.register_blueprint(auth.bp)
@@ -133,6 +148,20 @@ def create_app():
         u.must_change_password = True
         db.session.commit()
         print(f"Password seteada para '{nickname}' (debe cambiarla en el primer login).")
+
+    @app.cli.command("reset-onboarding")
+    @click.option("--only-players/--all", default=True, help="Solo players (default) o tambien admin")
+    def reset_onboarding(only_players):
+        """Marca a todos los usuarios con has_seen_about=False para que vuelvan a ver el onboarding."""
+        from app.models import Usuario
+        q = Usuario.query
+        if only_players:
+            q = q.filter(Usuario.rol == "player")
+        rows = q.all()
+        for u in rows:
+            u.has_seen_about = False
+        db.session.commit()
+        print(f"Reset onboarding para {len(rows)} usuario(s).")
 
     @app.cli.command("init-passwords")
     def init_passwords():

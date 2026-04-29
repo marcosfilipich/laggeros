@@ -1,3 +1,4 @@
+{% include "about/_onboarding_banner.html" %}
 <div class="subnav">
     <a href="{{ url_for('main.about_ranking') }}" class="subnav-item {% if current == 'ranking' %}active{% endif %}">Ranking</a>
     <a href="{{ url_for('main.about_reportes') }}" class="subnav-item {% if current == 'reportes' %}active{% endif %}">Reportes</a>

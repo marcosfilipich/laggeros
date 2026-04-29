@@ -288,6 +288,47 @@ main { min-width: 0; }
     padding: 1.5rem 1.5rem 2.5rem;
 }
 
+/* Onboarding banner + action button on about pages */
+.onboarding-banner {
+    padding: 0.95rem 1.1rem;
+    background: rgba(230, 57, 70, 0.12);
+    border: 1px solid rgba(230, 57, 70, 0.45);
+    border-left: 3px solid var(--accent);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin-bottom: 1rem;
+}
+.onboarding-banner strong {
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 800;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+.onboarding-banner em {
+    color: var(--text-primary);
+    font-style: normal;
+    font-weight: 600;
+}
+.onboarding-action {
+    margin-top: 1.25rem;
+    display: flex;
+    justify-content: center;
+}
+.onboarding-btn {
+    padding: 0.85rem 2rem !important;
+    font-size: 0.85rem !important;
+    box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.5);
+    animation: onboarding-pulse 2.4s ease-in-out infinite;
+}
+@keyframes onboarding-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.45); }
+    50% { box-shadow: 0 0 0 8px rgba(230, 57, 70, 0); }
+}
+
 /* About / docs pages */
 .about-body {
     padding: 1rem 1.25rem 1.5rem;
@@ -1155,6 +1196,25 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
     padding-left: 0.85rem;
     border-left: 2px solid var(--border);
 }
+
+.show-more-btn {
+    background: none;
+    border: none;
+    border-left: 2px solid var(--accent);
+    margin-left: -0.85rem;        /* alinea con el border-left de comment-children */
+    padding: 0.5rem 0 0.5rem 0.85rem;
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    font-family: inherit;
+    display: block;
+    width: 100%;
+    text-align: left;
+}
+.show-more-btn:hover { color: var(--accent-hover); border-left-color: var(--accent-hover); }
 
 ul.simple-list {
     list-style: none;

@@ -1,6 +1,6 @@
 from datetime import datetime
-from flask import Blueprint, render_template
-from flask_login import login_required
+from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import login_required, current_user
 from sqlalchemy import func
 from app import db
 from app.models import Usuario, Punto
@@ -76,7 +76,6 @@ def history():
 @bp.route("/about/")
 @login_required
 def about():
-    from flask import redirect, url_for
     return redirect(url_for("main.about_ranking"))
 
 
@@ -108,3 +107,12 @@ def about_votaciones():
 @login_required
 def about_rachas():
     return render_template("about/rachas.html", current="rachas")
+
+
+@bp.route("/about/done", methods=["POST"])
+@login_required
+def about_done():
+    current_user.has_seen_about = True
+    db.session.commit()
+    flash("Listo, ya podes empezar a usar Laggeros.", "success")
+    return redirect(url_for("main.index"))

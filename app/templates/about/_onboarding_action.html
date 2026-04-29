@@ -1,0 +1,7 @@
+{% if not current_user.has_seen_about %}
+<div class="onboarding-action">
+    <form method="post" action="{{ url_for('main.about_done') }}">
+        <button type="submit" class="btn-primary onboarding-btn">Listo, llevame al ranking</button>
+    </form>
+</div>
+{% endif %}
