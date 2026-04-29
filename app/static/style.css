@@ -533,22 +533,49 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
     border-color: var(--accent);
     box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.3);
 }
-.reviewer-checkbox.reviewer-auto { cursor: not-allowed; }
-.reviewer-checkbox.reviewer-auto span {
-    background: rgba(230, 57, 70, 0.1);
-    border-color: var(--accent);
-    color: var(--accent);
-    opacity: 0.85;
+.reviewer-checkbox.reviewer-disabled { cursor: not-allowed; }
+.reviewer-checkbox.reviewer-disabled span {
+    background: var(--bg-secondary);
+    border-color: var(--border);
+    color: var(--text-muted);
+    opacity: 0.55;
 }
-.reviewer-checkbox.reviewer-auto span::after {
-    content: "auto";
+.reviewer-checkbox.reviewer-disabled span::after {
+    content: "target";
     margin-left: 0.4rem;
     padding: 0.05rem 0.35rem;
-    background: var(--accent);
-    color: white;
+    background: var(--text-muted);
+    color: var(--bg-primary);
     font-size: 0.6rem;
     border-radius: 2px;
     letter-spacing: 0.4px;
+    font-weight: 700;
+}
+
+/* counter for reviewers */
+.reviewer-count {
+    margin-left: 0.5rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 2px;
+    background: rgba(248, 81, 73, 0.12);
+    color: #ff8a8a;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(248, 81, 73, 0.4);
+}
+.reviewer-count.reviewer-count-ok {
+    background: rgba(46, 160, 67, 0.12);
+    color: #7fdb98;
+    border-color: rgba(46, 160, 67, 0.4);
+}
+.reviewer-count.reviewer-count-error {
+    animation: shake 0.4s;
+}
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
 }
 
 /* ===== Status badges ===== */

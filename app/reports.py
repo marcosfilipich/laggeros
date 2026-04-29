@@ -65,12 +65,14 @@ def new_report():
             flash("Escribi una descripcion (al menos 5 caracteres).", "error")
             return redirect(url_for("reports.new_report"))
 
-        # Reviewer validation: excluir reporter y target del input; agregar target automaticamente
+        # Reviewer validation: excluir reporter y target del input; minimo 2.
         invalid = {current_user.id, target_id}
         clean_reviewer_ids = [rid for rid in reviewer_ids if rid not in invalid]
         clean_reviewer_ids = list(dict.fromkeys(clean_reviewer_ids))  # dedup conservando orden
-        if target_id not in clean_reviewer_ids:
-            clean_reviewer_ids.append(target_id)
+
+        if len(clean_reviewer_ids) < 2:
+            flash("Elegi al menos 2 reviewers (no podes ser vos ni el target).", "error")
+            return redirect(url_for("reports.new_report"))
 
         # File validation
         if len(files) > MAX_FILES:

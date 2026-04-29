@@ -34,7 +34,7 @@
         </label>
 
         <fieldset class="reviewer-pick">
-            <legend>Reviewers <span class="hint">(opcional. El target se agrega solo. No te podes incluir.)</span></legend>
+            <legend>Reviewers <span class="hint">(minimo 2 - no podes incluirte ni al target)</span> <span id="reviewer-count" class="reviewer-count">0 / 2</span></legend>
             <div class="reviewer-grid">
                 {% for p in reviewers_pool %}
                 <label class="reviewer-checkbox" data-uid="{{ p.id }}">
@@ -50,30 +50,51 @@
 </div>
 
 <script>
-// Esconder al target del listado de reviewers (no puede ser reviewer de si mismo... espera, si puede)
-// El target SI puede ser reviewer (se agrega automaticamente). Pero no debe aparecer como opcion seleccionable
-// porque ya se agrega solo. Lo desactivamos visualmente.
 (function () {
     var sel = document.getElementById('target-select');
-    if (!sel) return;
-    function update() {
+    var countEl = document.getElementById('reviewer-count');
+    var form = document.getElementById('report-form');
+    if (!sel || !countEl || !form) return;
+
+    function syncTarget() {
         var tid = sel.value;
         document.querySelectorAll('.reviewer-checkbox').forEach(function (lbl) {
             var cb = lbl.querySelector('input');
             if (lbl.dataset.uid === tid) {
-                lbl.classList.add('reviewer-auto');
+                lbl.classList.add('reviewer-disabled');
                 cb.checked = false;
                 cb.disabled = true;
-                lbl.title = 'El target se agrega automaticamente como reviewer';
+                lbl.title = 'Es el target del reporte, no puede ser reviewer';
             } else {
-                lbl.classList.remove('reviewer-auto');
+                lbl.classList.remove('reviewer-disabled');
                 cb.disabled = false;
                 lbl.title = '';
             }
         });
+        updateCount();
     }
-    sel.addEventListener('change', update);
-    update();
+
+    function updateCount() {
+        var checked = document.querySelectorAll('input[name="reviewers"]:checked').length;
+        countEl.textContent = checked + ' / 2';
+        countEl.classList.toggle('reviewer-count-ok', checked >= 2);
+    }
+
+    sel.addEventListener('change', syncTarget);
+    document.querySelectorAll('input[name="reviewers"]').forEach(function (cb) {
+        cb.addEventListener('change', updateCount);
+    });
+
+    form.addEventListener('submit', function (e) {
+        var checked = document.querySelectorAll('input[name="reviewers"]:checked').length;
+        if (checked < 2) {
+            e.preventDefault();
+            countEl.classList.add('reviewer-count-error');
+            countEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+
+    syncTarget();
 })();
 </script>
 {% endblock %}
