@@ -796,6 +796,111 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
 .vote-yes { background: rgba(46, 160, 67, 0.15); color: #7fdb98; border: 1px solid rgba(46, 160, 67, 0.5); }
 .vote-no  { background: rgba(248, 81, 73, 0.15); color: #ff8a8a; border: 1px solid rgba(248, 81, 73, 0.5); }
 
+/* reviewer chips with vote indicator */
+.reviewer-chip-yes { border-color: rgba(46, 160, 67, 0.5); }
+.reviewer-chip-no  { border-color: rgba(248, 81, 73, 0.5); }
+.chip-mark {
+    margin-left: 0.4rem;
+    padding: 0.05rem 0.35rem;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 2px;
+}
+.reviewer-chip-yes .chip-mark { background: #2ea043; color: white; }
+.reviewer-chip-no  .chip-mark { background: #f85149; color: white; }
+
+/* approval progress */
+.progress-rows { display: flex; flex-direction: column; gap: 0.5rem; }
+.progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.85rem;
+    background: var(--bg-tertiary);
+    border-left: 3px solid var(--text-muted);
+    font-size: 0.85rem;
+}
+.progress-row.progress-met {
+    border-left-color: #2ea043;
+    background: rgba(46, 160, 67, 0.12);
+    color: #7fdb98;
+}
+.progress-label { color: var(--text-secondary); }
+.progress-row.progress-met .progress-label { color: #7fdb98; }
+.progress-value {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.progress-row.progress-met .progress-value::after {
+    content: " OK";
+    margin-left: 0.4rem;
+    color: #7fdb98;
+}
+.progress-help {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+/* my-vote current indicator */
+.my-vote-current {
+    padding: 0.5rem 0.7rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+.my-vote-comment { color: var(--text-secondary); font-style: italic; }
+.vote-comment { color: var(--text-secondary); }
+
+/* vote form */
+.vote-form textarea {
+    display: block;
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 56px;
+    box-sizing: border-box;
+}
+.vote-form textarea::placeholder { color: var(--text-muted); font-style: italic; }
+.vote-form textarea:focus { outline: none; border-color: var(--accent); }
+
+.vote-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+}
+.btn-vote {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    border: 1px solid;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+.btn-vote-yes { color: #7fdb98; border-color: rgba(46, 160, 67, 0.5); }
+.btn-vote-yes:hover { background: rgba(46, 160, 67, 0.18); border-color: rgba(46, 160, 67, 0.9); }
+.btn-vote-no  { color: #ff8a8a; border-color: rgba(248, 81, 73, 0.5); }
+.btn-vote-no:hover { background: rgba(248, 81, 73, 0.18); border-color: rgba(248, 81, 73, 0.9); }
+
 ul.simple-list {
     list-style: none;
     padding: 0;

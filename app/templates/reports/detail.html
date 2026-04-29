@@ -47,11 +47,54 @@
         {% if report.reviewers %}
         <div class="reviewer-chips">
             {% for r in report.reviewers %}
-            <span class="reviewer-chip">{{ r.usuario.nickname }}</span>
+            {% set has_yes = report.votes | selectattr('usuario_id','equalto', r.usuario_id) | selectattr('vote','equalto','yes') | list | length > 0 %}
+            {% set has_no = report.votes | selectattr('usuario_id','equalto', r.usuario_id) | selectattr('vote','equalto','no') | list | length > 0 %}
+            <span class="reviewer-chip{% if has_yes %} reviewer-chip-yes{% elif has_no %} reviewer-chip-no{% endif %}">
+                {{ r.usuario.nickname }}
+                {% if has_yes %}<span class="chip-mark">si</span>{% elif has_no %}<span class="chip-mark">no</span>{% endif %}
+            </span>
             {% endfor %}
         </div>
+        {% endif %}
+    </div>
+
+    {% if report.status == 'pending' %}
+    <div class="report-block">
+        <div class="block-title">Progreso de aprobacion</div>
+        <div class="progress-rows">
+            <div class="progress-row{% if progress.total_reviewers > 0 and progress.reviewers_yes == progress.total_reviewers %} progress-met{% endif %}">
+                <span class="progress-label">Reviewers que dijeron SI</span>
+                <span class="progress-value">{{ progress.reviewers_yes }} / {{ progress.total_reviewers }}</span>
+            </div>
+            <div class="progress-row{% if progress.yes_count >= progress.total_yes_threshold %} progress-met{% endif %}">
+                <span class="progress-label">Total de votos SI (de cualquier player)</span>
+                <span class="progress-value">{{ progress.yes_count }} / {{ progress.total_yes_threshold }}</span>
+            </div>
+        </div>
+        <div class="progress-help">Se aprueba cuando se cumple <strong>cualquiera</strong> de las dos condiciones.</div>
+    </div>
+    {% endif %}
+
+    <div class="report-block">
+        <div class="block-title">{% if can_vote %}Tu voto{% else %}Tu participacion{% endif %}</div>
+        {% if not can_vote %}
+            <div class="empty-inline">{{ cant_vote_reason }}</div>
         {% else %}
-        <div class="empty-inline">Sin reviewers</div>
+            {% if my_vote %}
+                <div class="my-vote-current">
+                    Tu voto actual:
+                    <span class="vote-pill vote-{{ my_vote.vote }}">{{ my_vote.vote }}</span>
+                    {% if my_vote.comment %}<span class="my-vote-comment">- "{{ my_vote.comment }}"</span>{% endif %}
+                    <span class="attach-meta">{{ my_vote.voted_at.strftime("%Y-%m-%d %H:%M") }}</span>
+                </div>
+            {% endif %}
+            <form method="post" action="{{ url_for('reports.vote', report_id=report.id) }}" class="vote-form">
+                <textarea name="comment" placeholder="Comentario (opcional, max 500)" maxlength="500" rows="2">{{ my_vote.comment if my_vote and my_vote.comment else "" }}</textarea>
+                <div class="vote-buttons">
+                    <button type="submit" name="vote" value="yes" class="btn-vote btn-vote-yes">{% if my_vote and my_vote.vote == 'yes' %}Confirmar SI{% else %}Votar SI{% endif %}</button>
+                    <button type="submit" name="vote" value="no" class="btn-vote btn-vote-no">{% if my_vote and my_vote.vote == 'no' %}Confirmar NO{% else %}Votar NO{% endif %}</button>
+                </div>
+            </form>
         {% endif %}
     </div>
 
@@ -59,17 +102,17 @@
         <div class="block-title">Votos ({{ report.votes|length }})</div>
         {% if report.votes %}
         <ul class="vote-list">
-            {% for v in report.votes %}
+            {% for v in report.votes|sort(attribute='voted_at', reverse=true) %}
             <li>
                 <span class="vote-pill vote-{{ v.vote }}">{{ v.vote }}</span>
                 <strong>{{ v.usuario.nickname }}</strong>
-                {% if v.comment %}— <span style="color: var(--text-secondary);">{{ v.comment }}</span>{% endif %}
+                {% if v.comment %}<span class="vote-comment">- {{ v.comment }}</span>{% endif %}
                 <span class="attach-meta">{{ v.voted_at.strftime("%Y-%m-%d %H:%M") }}</span>
             </li>
             {% endfor %}
         </ul>
         {% else %}
-        <div class="empty-inline">Sin votos todavia. La votacion se habilita en el siguiente stage.</div>
+        <div class="empty-inline">Sin votos todavia.</div>
         {% endif %}
     </div>
 </div>

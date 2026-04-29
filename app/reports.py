@@ -1,5 +1,6 @@
 import os
 import uuid
+from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask import (
     Blueprint, render_template, request, redirect, url_for, flash,
@@ -7,7 +8,9 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from app import db
-from app.models import Usuario, Report, ReportReviewer, ReportAttachment
+from app.models import Usuario, Report, ReportReviewer, ReportAttachment, Vote, Punto
+
+TOTAL_YES_THRESHOLD = 6
 
 bp = Blueprint("reports", __name__, url_prefix="/reports")
 
@@ -179,7 +182,118 @@ def new_report():
 @login_required
 def detail(report_id):
     rep = Report.query.get_or_404(report_id)
-    return render_template("reports/detail.html", report=rep)
+
+    yes_voter_ids = {v.usuario_id for v in rep.votes if v.vote == "yes"}
+    reviewer_ids = {r.usuario_id for r in rep.reviewers}
+
+    progress = {
+        "yes_count": len(yes_voter_ids),
+        "no_count": sum(1 for v in rep.votes if v.vote == "no"),
+        "reviewers_yes": len(reviewer_ids & yes_voter_ids),
+        "total_reviewers": len(reviewer_ids),
+        "total_yes_threshold": TOTAL_YES_THRESHOLD,
+    }
+
+    my_vote = next((v for v in rep.votes if v.usuario_id == current_user.id), None)
+    can_vote = (
+        rep.status == "pending"
+        and current_user.id != rep.reporter_id
+        and current_user.id != rep.target_id
+    )
+    cant_vote_reason = None
+    if not can_vote:
+        if rep.status != "pending":
+            cant_vote_reason = f"El reporte esta {rep.status}, ya no se puede votar."
+        elif current_user.id == rep.reporter_id:
+            cant_vote_reason = "Sos el que creaste este reporte, no podes votar."
+        elif current_user.id == rep.target_id:
+            cant_vote_reason = "Sos el target del reporte, no podes votar."
+
+    return render_template(
+        "reports/detail.html",
+        report=rep,
+        progress=progress,
+        my_vote=my_vote,
+        can_vote=can_vote,
+        cant_vote_reason=cant_vote_reason,
+    )
+
+
+@bp.route("/<int:report_id>/vote", methods=["POST"])
+@login_required
+def vote(report_id):
+    rep = Report.query.get_or_404(report_id)
+
+    if rep.status != "pending":
+        flash("El reporte ya esta cerrado.", "error")
+        return redirect(url_for("reports.detail", report_id=rep.id))
+    if current_user.id in (rep.reporter_id, rep.target_id):
+        flash("No podes votar en este reporte (sos reporter o target).", "error")
+        return redirect(url_for("reports.detail", report_id=rep.id))
+
+    choice = request.form.get("vote")
+    comment = (request.form.get("comment") or "").strip() or None
+    if choice not in ("yes", "no"):
+        flash("Voto invalido.", "error")
+        return redirect(url_for("reports.detail", report_id=rep.id))
+
+    existing = Vote.query.filter_by(report_id=rep.id, usuario_id=current_user.id).first()
+    if existing:
+        existing.vote = choice
+        existing.comment = comment
+        existing.voted_at = datetime.utcnow()
+    else:
+        db.session.add(Vote(
+            report_id=rep.id,
+            usuario_id=current_user.id,
+            vote=choice,
+            comment=comment,
+        ))
+    db.session.commit()
+
+    reason = _check_and_apply_approval(rep)
+    if reason:
+        flash(
+            f"Voto registrado. Reporte aprobado ({reason}). "
+            f"Se aplicaron {rep.points} puntos a {rep.target.nickname}.",
+            "success",
+        )
+    else:
+        flash("Voto registrado.", "success")
+
+    return redirect(url_for("reports.detail", report_id=rep.id))
+
+
+def _check_and_apply_approval(rep):
+    """Si se cumple alguna condicion de aprobacion, marca approved y suma Puntos.
+    Devuelve string con el motivo si aprobo, None si no."""
+    if rep.status != "pending":
+        return None
+
+    yes_voter_ids = {
+        row[0] for row in db.session.query(Vote.usuario_id)
+        .filter(Vote.report_id == rep.id, Vote.vote == "yes").all()
+    }
+    reviewer_ids = {
+        row[0] for row in db.session.query(ReportReviewer.usuario_id)
+        .filter(ReportReviewer.report_id == rep.id).all()
+    }
+
+    if reviewer_ids and reviewer_ids.issubset(yes_voter_ids):
+        _apply_approval(rep)
+        return "todos los reviewers votaron si"
+
+    if len(yes_voter_ids) >= TOTAL_YES_THRESHOLD:
+        _apply_approval(rep)
+        return f"{len(yes_voter_ids)} players votaron si"
+
+    return None
+
+
+def _apply_approval(rep):
+    rep.status = "approved"
+    db.session.add(Punto(player_id=rep.target_id, points=rep.points))
+    db.session.commit()
 
 
 @bp.route("/uploads/<filename>")
