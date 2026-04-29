@@ -140,6 +140,7 @@ def create_app():
             ("Marqui", "Marcos", "player"),
             ("Juani", "Juani", "player"),
             ("Lucho", "Lucho", "player"),
+            ("Opro", "Lucas", "player"),
         ]
         added = 0
         for nickname, nombre_real, rol in defaults:
