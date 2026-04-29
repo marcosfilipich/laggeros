@@ -99,3 +99,18 @@ class Vote(db.Model):
     usuario = db.relationship("Usuario")
 
     __table_args__ = (db.UniqueConstraint("report_id", "usuario_id", name="uq_vote"),)
+
+
+class Comment(db.Model):
+    __tablename__ = "comments"
+
+    id = db.Column(db.Integer, primary_key=True)
+    report_id = db.Column(db.Integer, db.ForeignKey("reports.id"), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey("comments.id"), nullable=True)
+    body = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    usuario = db.relationship("Usuario")
+    report = db.relationship("Report", backref=db.backref("comments", lazy=True, cascade="all, delete-orphan"))
+    parent = db.relationship("Comment", remote_side=[id], backref="children")

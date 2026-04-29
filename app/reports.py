@@ -8,7 +8,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from app import db
-from app.models import Usuario, Report, ReportReviewer, ReportAttachment, Vote, Punto
+from app.models import Usuario, Report, ReportReviewer, ReportAttachment, Vote, Punto, Comment
 
 TOTAL_YES_THRESHOLD = 6
 
@@ -209,6 +209,17 @@ def detail(report_id):
         elif current_user.id == rep.target_id:
             cant_vote_reason = "Sos el target del reporte, no podes votar."
 
+    # Build comments tree (self-referential)
+    all_comments = (
+        Comment.query.filter(Comment.report_id == rep.id)
+        .order_by(Comment.created_at)
+        .all()
+    )
+    children_by_parent = {}
+    for c in all_comments:
+        children_by_parent.setdefault(c.parent_id, []).append(c)
+    top_level_comments = children_by_parent.get(None, [])
+
     return render_template(
         "reports/detail.html",
         report=rep,
@@ -216,6 +227,41 @@ def detail(report_id):
         my_vote=my_vote,
         can_vote=can_vote,
         cant_vote_reason=cant_vote_reason,
+        top_level_comments=top_level_comments,
+        children_by_parent=children_by_parent,
+        total_comments=len(all_comments),
+    )
+
+
+@bp.route("/<int:report_id>/comment", methods=["POST"])
+@login_required
+def comment(report_id):
+    rep = Report.query.get_or_404(report_id)
+
+    body = (request.form.get("body") or "").strip()
+    parent_id_raw = request.form.get("parent_id")
+    parent_id = int(parent_id_raw) if parent_id_raw and parent_id_raw.isdigit() else None
+
+    if not body:
+        flash("El comentario no puede estar vacio.", "error")
+        return redirect(url_for("reports.detail", report_id=rep.id))
+
+    if parent_id:
+        parent = Comment.query.get(parent_id)
+        if not parent or parent.report_id != rep.id:
+            abort(400)
+
+    new_c = Comment(
+        report_id=rep.id,
+        usuario_id=current_user.id,
+        parent_id=parent_id,
+        body=body[:5000],
+    )
+    db.session.add(new_c)
+    db.session.commit()
+
+    return redirect(
+        url_for("reports.detail", report_id=rep.id) + f"#comment-{new_c.id}"
     )
 
 

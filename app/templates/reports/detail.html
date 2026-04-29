@@ -122,5 +122,68 @@
         <div class="empty-inline">Sin votos todavia.</div>
         {% endif %}
     </div>
+
+    {# ===== Comments thread ===== #}
+    {% macro render_comment(c, children_by_parent) %}
+    <div class="comment" id="comment-{{ c.id }}">
+        <div class="comment-header">
+            <strong>{{ c.usuario.nickname }}</strong>
+            <span class="attach-meta">{{ c.created_at.strftime("%Y-%m-%d %H:%M") }}</span>
+        </div>
+        <div class="comment-body">{{ c.body }}</div>
+        <div class="comment-actions">
+            <button type="button" class="comment-action" onclick="toggleReply({{ c.id }})">Responder</button>
+        </div>
+        <form id="reply-form-{{ c.id }}" class="reply-form" method="post" action="{{ url_for('reports.comment', report_id=report.id) }}" style="display:none">
+            <input type="hidden" name="parent_id" value="{{ c.id }}">
+            <textarea name="body" required maxlength="5000" placeholder="Escribi tu respuesta..." rows="2"></textarea>
+            <div class="reply-buttons">
+                <button type="submit" class="btn-comment">Responder</button>
+                <button type="button" class="btn-comment-cancel" onclick="toggleReply({{ c.id }})">Cancelar</button>
+            </div>
+        </form>
+        {% set kids = children_by_parent.get(c.id, []) %}
+        {% if kids %}
+        <div class="comment-children">
+            {% for child in kids %}
+                {{ render_comment(child, children_by_parent) }}
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endmacro %}
+
+    <div class="report-block">
+        <div class="block-title">Comentarios ({{ total_comments }})</div>
+
+        <form method="post" action="{{ url_for('reports.comment', report_id=report.id) }}" class="comment-form">
+            <textarea name="body" required maxlength="5000" placeholder="Sumar un comentario al hilo..." rows="3"></textarea>
+            <button type="submit" class="btn-comment">Comentar</button>
+        </form>
+
+        {% if top_level_comments %}
+        <div class="comment-thread">
+            {% for c in top_level_comments %}
+                {{ render_comment(c, children_by_parent) }}
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-inline" style="margin-top: 0.5rem;">Sin comentarios todavia. Que arranque el debate.</div>
+        {% endif %}
+    </div>
 </div>
+
+<script>
+function toggleReply(id) {
+    var f = document.getElementById('reply-form-' + id);
+    if (!f) return;
+    if (f.style.display === 'none' || !f.style.display) {
+        f.style.display = '';
+        var ta = f.querySelector('textarea');
+        if (ta) ta.focus();
+    } else {
+        f.style.display = 'none';
+    }
+}
+</script>
 {% endblock %}

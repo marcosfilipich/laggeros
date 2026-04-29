@@ -910,6 +910,119 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
 .btn-vote-no  { color: #ff8a8a; border-color: rgba(248, 81, 73, 0.5); }
 .btn-vote-no:hover { background: rgba(248, 81, 73, 0.18); border-color: rgba(248, 81, 73, 0.9); }
 
+/* ===== Comments thread (Reddit-style) ===== */
+.comment-form {
+    margin-bottom: 1rem;
+}
+.comment-form textarea,
+.reply-form textarea {
+    display: block;
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 56px;
+    box-sizing: border-box;
+}
+.comment-form textarea:focus,
+.reply-form textarea:focus { outline: none; border-color: var(--accent); }
+.comment-form textarea::placeholder,
+.reply-form textarea::placeholder { color: var(--text-muted); font-style: italic; }
+
+.btn-comment {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.15s;
+    font-family: inherit;
+}
+.btn-comment:hover { background: var(--accent-hover); }
+
+.btn-comment-cancel {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1.1rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    margin-left: 0.4rem;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+.btn-comment-cancel:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+
+.comment-thread {
+    margin-top: 1rem;
+}
+.comment {
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--border);
+}
+.comment:first-child { border-top: none; padding-top: 0.4rem; }
+.comment-header {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    margin-bottom: 0.3rem;
+}
+.comment-header strong {
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+.comment-body {
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.comment-actions {
+    margin-top: 0.4rem;
+}
+.comment-action {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.2rem 0;
+    font-family: inherit;
+}
+.comment-action:hover { color: var(--accent); }
+
+.reply-form {
+    margin-top: 0.5rem;
+    padding: 0.6rem 0.7rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+}
+
+.comment-children {
+    margin-left: 0.5rem;
+    margin-top: 0.4rem;
+    padding-left: 0.85rem;
+    border-left: 2px solid var(--border);
+}
+
 ul.simple-list {
     list-style: none;
     padding: 0;
