@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}About: Ranking{% endblock %}
+{% block content %}
+{% include "about/_subnav.html" %}
+
+<div class="section">
+    <div class="section-header">
+        <h2>Como funciona el <span class="accent">ranking</span></h2>
+    </div>
+    <div class="about-body">
+        <p>El ranking lista todos los players ordenados por <strong>puntos totales acumulados</strong>, de mas a menos.</p>
+        <p><strong>Columnas:</strong></p>
+        <ul>
+            <li><strong>#</strong>: posicion en el ranking.</li>
+            <li><strong>Nickname / Nombre</strong>: identificacion del player.</li>
+            <li><strong>Puntos</strong>: suma total de puntos aplicados via reportes aprobados o castigos por reportes falsos.</li>
+            <li><strong>Reportes</strong>: cantidad de aplicaciones de puntos en su historial.</li>
+            <li><strong>Ultimo</strong>: cuanto hace que recibio el ultimo punto. Se muestra como "hace menos de 1 dia", "hace N dias", o <code>-</code> si nunca recibio.</li>
+            <li><strong>Racha</strong>: indicadores visuales de rachas activas. Ver <a href="{{ url_for('main.about_rachas') }}">Rachas</a>.</li>
+        </ul>
+        <p>El usuario <code>admin</code> no aparece en el ranking.</p>
+    </div>
+</div>
+{% endblock %}

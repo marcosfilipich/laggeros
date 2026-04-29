@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}About: Reviewer{% endblock %}
+{% block content %}
+{% include "about/_subnav.html" %}
+
+<div class="section">
+    <div class="section-header">
+        <h2>Como funciona ser <span class="accent">reviewer</span></h2>
+    </div>
+    <div class="about-body">
+        <p>Cuando alguien te designa como <strong>reviewer</strong> de un reporte, sos uno de los players cuya opinion es solicitada explicitamente para decidir si la acusacion procede.</p>
+
+        <p><strong>Reglas de asignacion:</strong></p>
+        <ul>
+            <li>El reporter NO puede ser reviewer de su propio reporte.</li>
+            <li>El target NO puede ser reviewer.</li>
+            <li>Cada reporte tiene <strong>minimo 2 reviewers</strong>. No hay maximo.</li>
+        </ul>
+
+        <p><strong>Como saber que tenes reportes para revisar:</strong></p>
+        <ul>
+            <li>Los reportes activos donde sos reviewer asignado y aun no votaste aparecen en la pestania <strong>Reportes pendientes</strong>.</li>
+            <li>Un circulito rojo con un numero aparece al lado de <strong>Reportes</strong> en el sidebar y al lado de <strong>Reportes pendientes</strong> en el sub-menu, indicando cuantos te quedan por votar.</li>
+        </ul>
+
+        <p>Aunque no seas reviewer asignado, podes votar igual sobre cualquier reporte (excepto los tuyos o donde sos target). El rol de reviewer es relevante porque <strong>la aprobacion automatica se dispara cuando todos los reviewers asignados votan SI</strong>. Ver <a href="{{ url_for('main.about_votaciones') }}">Votaciones</a>.</p>
+    </div>
+</div>
+{% endblock %}

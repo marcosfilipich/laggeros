@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}About: Votaciones{% endblock %}
+{% block content %}
+{% include "about/_subnav.html" %}
+
+<div class="section">
+    <div class="section-header">
+        <h2>Como funcionan las <span class="accent">votaciones</span></h2>
+    </div>
+    <div class="about-body">
+        <p>Cualquier player puede votar SI o NO en cualquier reporte abierto, <strong>excepto</strong>:</p>
+        <ul>
+            <li>El reporter (creador del reporte) NO puede votar.</li>
+            <li>El target (acusado) NO puede votar.</li>
+            <li>Los reportes ya cerrados (approved / rejected / cancelled) no aceptan votos.</li>
+        </ul>
+
+        <p>Cada player vota una sola vez por reporte. <strong>El voto es final, no se puede cambiar.</strong> Antes de confirmar el voto el sistema te pide confirmacion explicita.</p>
+
+        <p><strong>Condiciones de aprobacion</strong> (reporte pasa a <span class="badge badge-approved">approved</span>):</p>
+        <ul>
+            <li>Todos los reviewers asignados votaron SI, <strong>o</strong></li>
+            <li>Hay al menos <strong>6 votos SI</strong> en total (de cualquier player, no solo reviewers).</li>
+        </ul>
+        <p>Si se aprueba, los puntos del reporte se aplican automaticamente al target.</p>
+
+        <p><strong>Condicion de rechazo</strong> (reporte pasa a <span class="badge badge-rejected">rejected</span>):</p>
+        <ul>
+            <li>5 o mas votos NO.</li>
+        </ul>
+        <p>Si se rechaza, no se aplican puntos al target. El contador de reportes falsos del reporter se incrementa, y al llegar a 3 se reinicia con un castigo de 3 puntos al reporter (ver <a href="{{ url_for('main.about_reportes') }}">Reportes</a>).</p>
+
+        <p>En la pagina de detalle de cada reporte aparece el bloque <strong>Progreso de aprobacion</strong> con dos barras (reviewers SI y total SI) que se ponen verdes cuando se cumple la condicion correspondiente.</p>
+    </div>
+</div>
+{% endblock %}

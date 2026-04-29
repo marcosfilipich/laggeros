@@ -266,6 +266,31 @@ main { min-width: 0; }
     padding: 1.5rem 1.5rem 2.5rem;
 }
 
+/* About / docs pages */
+.about-body {
+    padding: 1rem 1.25rem 1.5rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+.about-body p { margin: 0 0 0.85rem; }
+.about-body p:last-child { margin-bottom: 0; }
+.about-body ul { margin: 0 0 1rem; padding-left: 1.4rem; }
+.about-body li { margin-bottom: 0.35rem; }
+.about-body code {
+    background: var(--bg-primary);
+    padding: 0.1rem 0.4rem;
+    font-size: 0.82rem;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.about-body strong { color: var(--text-primary); }
+.about-body a { color: var(--accent); text-decoration: none; }
+.about-body a:hover { text-decoration: underline; }
+
+.sidebar-icon { font-size: 0.95em; opacity: 0.85; }
+
 /* Horizontal sub-nav (e.g. inside Reportes section) */
 .subnav {
     display: flex;

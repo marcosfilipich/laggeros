@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}About: Reportes{% endblock %}
+{% block content %}
+{% include "about/_subnav.html" %}
+
+<div class="section">
+    <div class="section-header">
+        <h2>Como funcionan los <span class="accent">reportes</span></h2>
+    </div>
+    <div class="about-body">
+        <p>Cualquier player puede crear un reporte acusando a otro de laggear.</p>
+
+        <p><strong>Crear un reporte requiere:</strong></p>
+        <ul>
+            <li><strong>Target</strong>: el player acusado (no podes ser vos mismo).</li>
+            <li><strong>Puntos (1-10)</strong>: severidad propuesta. 1 = leve, 10 = grave. Si el reporte se aprueba, esos puntos se le suman al target.</li>
+            <li><strong>Descripcion</strong>: explicacion del incidente (minimo 5 caracteres).</li>
+            <li><strong>Adjuntos</strong>: opcional. Hasta 3 archivos de hasta 5MB c/u (jpg, png, gif, webp, pdf).</li>
+            <li><strong>Reviewers</strong>: minimo 2. No podes incluirte ni al target. Ver <a href="{{ url_for('main.about_reviewer') }}">Reviewer</a>.</li>
+        </ul>
+
+        <p><strong>Estados de un reporte:</strong></p>
+        <ul>
+            <li><span class="badge badge-pending">pending</span> esperando votos.</li>
+            <li><span class="badge badge-approved">approved</span> se cumplio una condicion de aprobacion. Los puntos se aplican al target automaticamente.</li>
+            <li><span class="badge badge-rejected">rejected</span> 5 o mas votos NO. Los puntos NO se aplican al target. Si vos creaste el reporte, sumas a tu contador de reportes falsos.</li>
+        </ul>
+
+        <p><strong>Castigo por reportes falsos:</strong> cada 3 reportes que crees y terminen rechazados, se reinicia el contador y se te suman <strong>3 puntos</strong> al ranking como sancion.</p>
+
+        <p>Las pestanias de Reportes son: <strong>Activos</strong> (pending), <strong>Pendientes</strong> (los que necesitan tu voto como reviewer asignado), <strong>Cerrados</strong> (approved/rejected) y <strong>Generar reporte</strong>.</p>
+    </div>
+</div>
+{% endblock %}

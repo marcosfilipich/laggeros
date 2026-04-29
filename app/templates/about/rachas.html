@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}About: Rachas{% endblock %}
+{% block content %}
+{% include "about/_subnav.html" %}
+
+<div class="section">
+    <div class="section-header">
+        <h2>Como funcionan las <span class="accent">rachas</span></h2>
+    </div>
+    <div class="about-body">
+        <p>En la columna <strong>Racha</strong> del ranking aparecen indicadores visuales para players con rachas activas:</p>
+
+        <p>
+            <span class="streak streak-blue">🔥</span> <strong>Fueguito azul</strong>: el player no recibe puntos hace al menos <strong>10 dias</strong>. Hover sobre el icono muestra "X dias sin laggearla".
+        </p>
+
+        <p>
+            <span class="streak streak-red">🔥</span> <strong>Fueguito rojo</strong>: el player tiene una racha activa de lags consecutivos. Cada lag tiene que estar a 48 horas o menos del anterior, y el ultimo a 48 horas o menos del momento actual. Hover muestra "Lleva X dias laggeandola", donde X es el span en dias entre el primer y el ultimo lag de la racha.
+        </p>
+
+        <p>Si el player no cumple ninguna de las dos condiciones, la celda Racha queda vacia.</p>
+
+        <p>Las rachas se calculan en tiempo real al cargar la pagina del ranking, mirando el historial de Puntos de cada player.</p>
+    </div>
+</div>
+{% endblock %}

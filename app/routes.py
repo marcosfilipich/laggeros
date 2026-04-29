@@ -69,3 +69,42 @@ def index():
 def history():
     reports = Punto.query.order_by(Punto.date_inserted.desc()).limit(100).all()
     return render_template("history.html", reports=reports)
+
+
+# ---- About / docs ----
+
+@bp.route("/about/")
+@login_required
+def about():
+    from flask import redirect, url_for
+    return redirect(url_for("main.about_ranking"))
+
+
+@bp.route("/about/ranking")
+@login_required
+def about_ranking():
+    return render_template("about/ranking.html", current="ranking")
+
+
+@bp.route("/about/reportes")
+@login_required
+def about_reportes():
+    return render_template("about/reportes.html", current="reportes")
+
+
+@bp.route("/about/reviewer")
+@login_required
+def about_reviewer():
+    return render_template("about/reviewer.html", current="reviewer")
+
+
+@bp.route("/about/votaciones")
+@login_required
+def about_votaciones():
+    return render_template("about/votaciones.html", current="votaciones")
+
+
+@bp.route("/about/rachas")
+@login_required
+def about_rachas():
+    return render_template("about/rachas.html", current="rachas")
