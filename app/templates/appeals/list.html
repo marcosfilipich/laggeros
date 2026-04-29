@@ -5,7 +5,11 @@
 
 <div class="section">
     <div class="section-header">
-        <h2>Apelaciones <span class="accent">solicitadas</span></h2>
+        <h2>
+            {% if current == 'pending' %}Apelaciones <span class="accent">pendientes</span> <span class="hint" style="font-size:0.7rem; text-transform:none; letter-spacing:0;">(podes votar)</span>
+            {% else %}Apelaciones <span class="accent">solicitadas</span>
+            {% endif %}
+        </h2>
         <span class="section-meta">{{ appeals|length }} en total</span>
     </div>
     {% if appeals %}
@@ -37,7 +41,8 @@
     </table>
     {% else %}
     <div class="empty-state">
-        Todavia no hay apelaciones. Si te aprobaron un reclamo con solo 2 votos SI, podes <a href="{{ url_for('appeals.new_appeal') }}">apelarlo</a>.
+        {{ empty_msg or "Todavia no hay apelaciones." }}
+        {% if current == 'list' %}Si te aprobaron un reclamo con solo 2 votos SI, podes <a href="{{ url_for('appeals.new_appeal') }}">apelarlo</a>.{% endif %}
     </div>
     {% endif %}
 </div>

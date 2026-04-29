@@ -14,7 +14,7 @@
         No tenes reportes apelables. Solo se pueden apelar reclamos <span class="badge badge-approved">approved</span> con exactamente 2 votos SI en total y en los que vos seas el target.
     </div>
     {% else %}
-    <form method="post" class="form-body">
+    <form method="post" enctype="multipart/form-data" class="form-body">
         <label>Reclamo a apelar
             <select name="report_id" required>
                 <option value="">Elegi un reclamo</option>
@@ -28,6 +28,10 @@
 
         <label>Por que apelas?
             <textarea name="description" required minlength="5" maxlength="2000" rows="4" placeholder="Explicales a los votantes por que el reclamo original es injusto"></textarea>
+        </label>
+
+        <label>Adjuntos <span class="hint">(opcional, max {{ max_files }} archivos de hasta {{ max_size_mb }}MB c/u: {{ allowed_exts|join(", ") }})</span>
+            <input type="file" name="files" multiple accept=".jpg,.jpeg,.png,.gif,.webp,.pdf">
         </label>
 
         <div class="vote-warning">

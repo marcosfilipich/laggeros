@@ -140,6 +140,9 @@ class Appeal(db.Model):
     votes = db.relationship(
         "AppealVote", backref="appeal", cascade="all, delete-orphan", lazy=True
     )
+    attachments = db.relationship(
+        "AppealAttachment", backref="appeal", cascade="all, delete-orphan", lazy=True
+    )
 
 
 class AppealVote(db.Model):
@@ -155,3 +158,15 @@ class AppealVote(db.Model):
     usuario = db.relationship("Usuario")
 
     __table_args__ = (db.UniqueConstraint("appeal_id", "usuario_id", name="uq_appeal_vote"),)
+
+
+class AppealAttachment(db.Model):
+    __tablename__ = "appeal_attachments"
+
+    id = db.Column(db.Integer, primary_key=True)
+    appeal_id = db.Column(db.Integer, db.ForeignKey("appeals.id"), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    original_name = db.Column(db.String(255), nullable=False)
+    mime_type = db.Column(db.String(80), nullable=False)
+    size_bytes = db.Column(db.Integer, nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)

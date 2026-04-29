@@ -32,7 +32,10 @@
                     Reportes
                     {% if pending_review_count and pending_review_count > 0 %}<span class="nav-badge">{{ pending_review_count }}</span>{% endif %}
                 </a>
-                <a href="{{ url_for('appeals.list_appeals') }}" {% if request.endpoint and request.endpoint.startswith('appeals.') %}class="active"{% endif %}>Apelaciones</a>
+                <a href="{{ url_for('appeals.list_appeals') }}" {% if request.endpoint and request.endpoint.startswith('appeals.') %}class="active"{% endif %}>
+                    Apelaciones
+                    {% if pending_appeal_count and pending_appeal_count > 0 %}<span class="nav-badge">{{ pending_appeal_count }}</span>{% endif %}
+                </a>
                 <a href="{{ url_for('main.history') }}" {% if request.endpoint == 'main.history' %}class="active"{% endif %}>Historial</a>
                 <a href="{{ url_for('auth.change_password') }}" {% if request.endpoint == 'auth.change_password' %}class="active"{% endif %}>Configuracion</a>
                 <a href="{{ url_for('main.about') }}" class="pinned-bottom {% if request.endpoint and request.endpoint.startswith('main.about') %}active{% endif %}">About <span class="sidebar-icon">❓</span></a>

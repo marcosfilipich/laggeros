@@ -1,10 +1,14 @@
+import os
+import uuid
 from datetime import datetime
+from werkzeug.utils import secure_filename
 from flask import (
     Blueprint, render_template, request, redirect, url_for, flash, abort,
+    current_app, send_from_directory,
 )
 from flask_login import login_required, current_user
 from app import db
-from app.models import Usuario, Report, Vote, Punto, Appeal, AppealVote
+from app.models import Usuario, Report, Vote, Punto, Appeal, AppealVote, AppealAttachment
 
 bp = Blueprint("appeals", __name__, url_prefix="/appeals")
 
@@ -12,6 +16,14 @@ APPEAL_YES_THRESHOLD = 5            # >= 5 votos SI -> approved
 APPEAL_NO_THRESHOLD = 2             # >= 2 votos NO -> rejected (no dan los numeros)
 APPEAL_REJECTION_PENALTY = 3        # puntos para el apelante si pierde la apelacion
 APPEAL_APPROVAL_BONUS = 1           # punto extra a favor del apelante si gana
+
+ALLOWED_EXTS = {"jpg", "jpeg", "png", "gif", "webp", "pdf"}
+MAX_FILE_SIZE = 5 * 1024 * 1024     # 5MB
+MAX_FILES = 3
+
+
+def _ext(filename):
+    return filename.rsplit(".", 1)[-1].lower() if "." in (filename or "") else ""
 
 
 def _eligible_reports_for_appeal(user_id):
@@ -54,7 +66,24 @@ def list_appeals_redirect():
 @login_required
 def list_appeals():
     appeals = Appeal.query.order_by(Appeal.created_at.desc()).all()
-    return render_template("appeals/list.html", appeals=appeals, current="list")
+    return render_template("appeals/list.html", appeals=appeals, current="list",
+                           empty_msg="Todavia no hay apelaciones.")
+
+
+@bp.route("/pending")
+@login_required
+def pending_appeals():
+    """Apelaciones pending donde current_user puede votar y todavia no voto."""
+    appeals_q = Appeal.query.filter(Appeal.status == "pending").all()
+    eligible = []
+    for a in appeals_q:
+        if current_user.id in _appeal_voting_excluded_users(a):
+            continue
+        if AppealVote.query.filter_by(appeal_id=a.id, usuario_id=current_user.id).first():
+            continue
+        eligible.append(a)
+    return render_template("appeals/list.html", appeals=eligible, current="pending",
+                           empty_msg="No tenes apelaciones pendientes para votar.")
 
 
 @bp.route("/new", methods=["GET", "POST"])
@@ -65,6 +94,7 @@ def new_appeal():
     if request.method == "POST":
         report_id = request.form.get("report_id", type=int)
         description = (request.form.get("description") or "").strip()
+        files = [f for f in request.files.getlist("files") if f and f.filename]
 
         if not report_id:
             flash("Elegi un reporte para apelar.", "error")
@@ -79,6 +109,14 @@ def new_appeal():
             flash("Ese reporte no es apelable.", "error")
             return redirect(url_for("appeals.new_appeal"))
 
+        if len(files) > MAX_FILES:
+            flash(f"Maximo {MAX_FILES} archivos.", "error")
+            return redirect(url_for("appeals.new_appeal"))
+        for f in files:
+            if _ext(f.filename) not in ALLOWED_EXTS:
+                flash(f"Tipo no permitido: {f.filename}. Solo: {', '.join(sorted(ALLOWED_EXTS))}", "error")
+                return redirect(url_for("appeals.new_appeal"))
+
         appeal = Appeal(
             report_id=rep.id,
             appealer_id=current_user.id,
@@ -86,6 +124,28 @@ def new_appeal():
             status="pending",
         )
         db.session.add(appeal)
+        db.session.flush()
+
+        upload_dir = current_app.config["UPLOAD_FOLDER"]
+        os.makedirs(upload_dir, exist_ok=True)
+        for f in files:
+            ext = _ext(f.filename)
+            stored = f"{uuid.uuid4().hex}.{ext}"
+            path = os.path.join(upload_dir, stored)
+            f.save(path)
+            size = os.path.getsize(path)
+            if size > MAX_FILE_SIZE:
+                os.remove(path)
+                flash(f"Archivo {f.filename} supera 5MB - no guardado.", "error")
+                continue
+            db.session.add(AppealAttachment(
+                appeal_id=appeal.id,
+                filename=stored,
+                original_name=secure_filename(f.filename),
+                mime_type=(f.mimetype or "application/octet-stream")[:80],
+                size_bytes=size,
+            ))
+
         db.session.commit()
         flash(f"Apelacion #{appeal.id} creada.", "success")
         return redirect(url_for("appeals.detail", appeal_id=appeal.id))
@@ -94,7 +154,19 @@ def new_appeal():
         "appeals/new.html",
         eligible=eligible,
         current="new",
+        max_files=MAX_FILES,
+        max_size_mb=MAX_FILE_SIZE // (1024 * 1024),
+        allowed_exts=sorted(ALLOWED_EXTS),
     )
+
+
+@bp.route("/uploads/<filename>")
+@login_required
+def serve_upload(filename):
+    if "/" in filename or "\\" in filename or ".." in filename:
+        abort(404)
+    upload_dir = current_app.config["UPLOAD_FOLDER"]
+    return send_from_directory(upload_dir, filename)
 
 
 @bp.route("/<int:appeal_id>")

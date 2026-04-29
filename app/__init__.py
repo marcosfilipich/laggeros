@@ -86,6 +86,33 @@ def create_app():
         ) or 0
         return {"pending_review_count": count}
 
+    @app.context_processor
+    def inject_pending_appeal_count():
+        if not current_user.is_authenticated:
+            return {"pending_appeal_count": 0}
+        from app.models import Appeal, AppealVote, Report, Vote
+        # Subquery: report_ids donde current_user voto SI en el original
+        yes_on_orig = (
+            db.session.query(Vote.report_id)
+            .filter(Vote.usuario_id == current_user.id, Vote.vote == "yes")
+        )
+        # Subquery: appeal_ids donde current_user ya voto
+        already_voted = (
+            db.session.query(AppealVote.appeal_id)
+            .filter(AppealVote.usuario_id == current_user.id)
+        )
+        count = (
+            Appeal.query
+            .join(Report, Report.id == Appeal.report_id)
+            .filter(Appeal.status == "pending")
+            .filter(Appeal.appealer_id != current_user.id)
+            .filter(Report.reporter_id != current_user.id)
+            .filter(~Appeal.report_id.in_(yes_on_orig))
+            .filter(~Appeal.id.in_(already_voted))
+            .count()
+        )
+        return {"pending_appeal_count": count}
+
     @app.cli.command("init-db")
     def init_db():
         from app import models  # noqa: F401

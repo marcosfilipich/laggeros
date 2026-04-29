@@ -26,6 +26,20 @@
         <div class="block-body">{{ appeal.description }}</div>
     </div>
 
+    {% if appeal.attachments %}
+    <div class="report-block">
+        <div class="block-title">Adjuntos ({{ appeal.attachments|length }})</div>
+        <ul class="attachment-list">
+            {% for a in appeal.attachments %}
+            <li>
+                <a href="{{ url_for('appeals.serve_upload', filename=a.filename) }}" target="_blank">{{ a.original_name }}</a>
+                <span class="attach-meta">{{ a.mime_type }} &middot; {{ (a.size_bytes / 1024)|round(1) }} KB</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
     <div class="report-block">
         <div class="block-title">Quien NO puede votar en esta apelacion</div>
         <div class="reviewer-chips">
