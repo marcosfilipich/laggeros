@@ -21,6 +21,16 @@ def _comment_counts():
     )
     return dict(rows)
 
+
+def _attachment_counts():
+    """Devuelve dict {report_id: count} con la cantidad de adjuntos por reporte."""
+    rows = (
+        db.session.query(ReportAttachment.report_id, func.count(ReportAttachment.id))
+        .group_by(ReportAttachment.report_id)
+        .all()
+    )
+    return dict(rows)
+
 TOTAL_YES_THRESHOLD = 6
 NO_REJECTION_THRESHOLD = 5            # >= 5 votos NO -> rechazado
 FALSE_REPORTS_THRESHOLD = 3           # cada N reportes rechazados...
@@ -61,7 +71,8 @@ def active_reports():
     )
     return render_template("reports/list.html", reports=reports, current="active",
                            empty_msg="No hay reportes activos.",
-                           comment_counts=_comment_counts())
+                           comment_counts=_comment_counts(),
+                           attachment_counts=_attachment_counts())
 
 
 @bp.route("/pending")
@@ -84,6 +95,7 @@ def pending_reports():
         current="pending",
         empty_msg="No tenes reportes pendientes para revisar.",
         comment_counts=_comment_counts(),
+        attachment_counts=_attachment_counts(),
     )
 
 
@@ -97,7 +109,8 @@ def closed_reports():
     )
     return render_template("reports/list.html", reports=reports, current="closed",
                            empty_msg="No hay reportes cerrados todavia.",
-                           comment_counts=_comment_counts())
+                           comment_counts=_comment_counts(),
+                           attachment_counts=_attachment_counts())
 
 
 @bp.route("/new", methods=["GET", "POST"])
