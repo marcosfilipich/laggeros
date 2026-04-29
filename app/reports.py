@@ -122,7 +122,6 @@ def new_report():
         target_id = request.form.get("target_id", type=int)
         points = request.form.get("points", type=int)
         description = (request.form.get("description") or "").strip()
-        evidence_text = (request.form.get("evidence_text") or "").strip() or None
         reviewer_ids = [int(x) for x in request.form.getlist("reviewers") if x.isdigit()]
         files = [f for f in request.files.getlist("files") if f and f.filename]
 
@@ -167,7 +166,6 @@ def new_report():
             target_id=target_id,
             points=points,
             description=description,
-            evidence_text=evidence_text,
             status="pending",
         )
         db.session.add(rep)

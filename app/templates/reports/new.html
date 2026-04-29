@@ -28,10 +28,6 @@
             <textarea name="description" required minlength="5" maxlength="2000" rows="3" placeholder="Que paso? cuando? en que partida?"></textarea>
         </label>
 
-        <label>Evidencia adicional <span class="hint">(opcional - links externos, contexto, etc)</span>
-            <textarea name="evidence_text" maxlength="2000" rows="2" placeholder="Pegar links, paste de twitch, etc"></textarea>
-        </label>
-
         <label>Adjuntos <span class="hint">(opcional, max {{ max_files }} archivos de hasta {{ max_size_mb }}MB c/u: {{ allowed_exts|join(", ") }})</span>
             <input type="file" name="files" multiple accept=".jpg,.jpeg,.png,.gif,.webp,.pdf">
         </label>
