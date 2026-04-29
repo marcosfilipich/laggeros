@@ -239,16 +239,15 @@ def vote(report_id):
 
     existing = Vote.query.filter_by(report_id=rep.id, usuario_id=current_user.id).first()
     if existing:
-        existing.vote = choice
-        existing.comment = comment
-        existing.voted_at = datetime.utcnow()
-    else:
-        db.session.add(Vote(
-            report_id=rep.id,
-            usuario_id=current_user.id,
-            vote=choice,
-            comment=comment,
-        ))
+        flash("Ya votaste en este reporte. El voto no se puede cambiar.", "error")
+        return redirect(url_for("reports.detail", report_id=rep.id))
+
+    db.session.add(Vote(
+        report_id=rep.id,
+        usuario_id=current_user.id,
+        vote=choice,
+        comment=comment,
+    ))
     db.session.commit()
 
     reason = _check_and_apply_approval(rep)

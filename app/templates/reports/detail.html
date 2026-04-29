@@ -76,23 +76,30 @@
     {% endif %}
 
     <div class="report-block">
-        <div class="block-title">{% if can_vote %}Tu voto{% else %}Tu participacion{% endif %}</div>
-        {% if not can_vote %}
+        <div class="block-title">Tu voto</div>
+        {% if my_vote %}
+            <div class="my-vote-current">
+                Tu voto:
+                <span class="vote-pill vote-{{ my_vote.vote }}">{{ my_vote.vote }}</span>
+                {% if my_vote.comment %}<span class="my-vote-comment">- "{{ my_vote.comment }}"</span>{% endif %}
+                <span class="attach-meta">{{ my_vote.voted_at.strftime("%Y-%m-%d %H:%M") }}</span>
+            </div>
+            <div class="empty-inline">El voto ya quedo registrado y no se puede cambiar.</div>
+        {% elif not can_vote %}
             <div class="empty-inline">{{ cant_vote_reason }}</div>
         {% else %}
-            {% if my_vote %}
-                <div class="my-vote-current">
-                    Tu voto actual:
-                    <span class="vote-pill vote-{{ my_vote.vote }}">{{ my_vote.vote }}</span>
-                    {% if my_vote.comment %}<span class="my-vote-comment">- "{{ my_vote.comment }}"</span>{% endif %}
-                    <span class="attach-meta">{{ my_vote.voted_at.strftime("%Y-%m-%d %H:%M") }}</span>
-                </div>
-            {% endif %}
+            <div class="vote-warning">Una vez votado no vas a poder cambiar tu voto.</div>
             <form method="post" action="{{ url_for('reports.vote', report_id=report.id) }}" class="vote-form">
-                <textarea name="comment" placeholder="Comentario (opcional, max 500)" maxlength="500" rows="2">{{ my_vote.comment if my_vote and my_vote.comment else "" }}</textarea>
+                <textarea name="comment" placeholder="Comentario (opcional, max 500)" maxlength="500" rows="2"></textarea>
                 <div class="vote-buttons">
-                    <button type="submit" name="vote" value="yes" class="btn-vote btn-vote-yes">{% if my_vote and my_vote.vote == 'yes' %}Confirmar SI{% else %}Votar SI{% endif %}</button>
-                    <button type="submit" name="vote" value="no" class="btn-vote btn-vote-no">{% if my_vote and my_vote.vote == 'no' %}Confirmar NO{% else %}Votar NO{% endif %}</button>
+                    <button type="submit" name="vote" value="yes" class="btn-vote btn-vote-yes"
+                            onclick="return confirm('Confirmas que votas SI? Una vez confirmado no se puede cambiar.');">
+                        Votar SI
+                    </button>
+                    <button type="submit" name="vote" value="no" class="btn-vote btn-vote-no"
+                            onclick="return confirm('Confirmas que votas NO? Una vez confirmado no se puede cambiar.');">
+                        Votar NO
+                    </button>
                 </div>
             </form>
         {% endif %}

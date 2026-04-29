@@ -861,6 +861,15 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
 .my-vote-comment { color: var(--text-secondary); font-style: italic; }
 .vote-comment { color: var(--text-secondary); }
 
+.vote-warning {
+    padding: 0.5rem 0.7rem;
+    background: rgba(255, 209, 102, 0.08);
+    border-left: 3px solid #ffd166;
+    color: #ffd166;
+    font-size: 0.78rem;
+    margin-bottom: 0.6rem;
+}
+
 /* vote form */
 .vote-form textarea {
     display: block;
