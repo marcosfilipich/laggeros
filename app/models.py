@@ -109,6 +109,18 @@ class Vote(db.Model):
     __table_args__ = (db.UniqueConstraint("report_id", "usuario_id", name="uq_vote"),)
 
 
+class Cumpleanios(db.Model):
+    """Fecha de nacimiento de cada player. Se usa para mostrar el banner de
+    cumpleanios cuando el dia coincide con el de hoy."""
+    __tablename__ = "cumpleanios"
+
+    id = db.Column(db.Integer, primary_key=True)
+    player_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False, unique=True)
+    birthdate = db.Column(db.Date, nullable=False)
+
+    player = db.relationship("Usuario", backref=db.backref("cumpleanios", uselist=False))
+
+
 class ReportView(db.Model):
     """Cuando un usuario abrio el detalle de un reporte por ultima vez.
     Se usa para detectar replies a sus comentarios que aun no vio."""

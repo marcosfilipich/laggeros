@@ -1,5 +1,6 @@
+import random
 import secrets
-from datetime import datetime
+from datetime import datetime, date
 import click
 from flask import Flask, redirect, request, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -92,6 +93,27 @@ def create_app():
         return {"pending_review_count": count}
 
     @app.context_processor
+    def inject_birthday():
+        """Si hoy es el cumple de algun player, expone birthday_player y un
+        birthday_message random tomado de app.birthday_messages.MESSAGES."""
+        from app.models import Usuario, Cumpleanios
+        from app.birthday_messages import MESSAGES
+        today = date.today()
+        today_md = (today.month, today.day)
+        rows = (
+            db.session.query(Usuario, Cumpleanios)
+            .join(Cumpleanios, Cumpleanios.player_id == Usuario.id)
+            .all()
+        )
+        for u, c in rows:
+            if (c.birthdate.month, c.birthdate.day) == today_md:
+                return {
+                    "birthday_player": u,
+                    "birthday_message": random.choice(MESSAGES),
+                }
+        return {"birthday_player": None, "birthday_message": None}
+
+    @app.context_processor
     def inject_unread_reply_count():
         if not current_user.is_authenticated:
             return {"unread_reply_count": 0}
@@ -134,7 +156,8 @@ def create_app():
 
     @app.cli.command("seed")
     def seed():
-        from app.models import Usuario
+        from datetime import date as _date
+        from app.models import Usuario, Cumpleanios
         # nickname, nombre_real, rol
         defaults = [
             ("Queso", "Marcos", "player"),
@@ -165,7 +188,28 @@ def create_app():
             added += 1
 
         db.session.commit()
-        print(f"Seeded {added} new usuario(s) (skipped existing).")
+
+        # Cumpleanios conocidos. Faltan Opro y Lucho (TBD).
+        bday_defaults = {
+            "Queso": _date(2000, 10, 1),
+            "Lommi": _date(2000, 7, 6),
+            "Pyrook": _date(2002, 4, 29),
+            "Marqui": _date(2000, 11, 4),
+            "Ghiro": _date(2000, 10, 10),
+            "Ando": _date(2000, 10, 6),
+            "Juani": _date(2000, 7, 21),
+            "Tompson": _date(2001, 2, 28),
+            "Pancho": _date(2000, 9, 3),
+            "Feri": _date(2000, 6, 25),
+        }
+        bday_added = 0
+        for nick, bd in bday_defaults.items():
+            u = Usuario.query.filter_by(nickname=nick).first()
+            if u and not Cumpleanios.query.filter_by(player_id=u.id).first():
+                db.session.add(Cumpleanios(player_id=u.id, birthdate=bd))
+                bday_added += 1
+        db.session.commit()
+        print(f"Seeded {added} new usuario(s), {bday_added} cumpleanios (skipped existing).")
 
     @app.cli.command("reset-db")
     @click.confirmation_option(prompt="Esto borra TODAS las tablas y datos. Seguro?")

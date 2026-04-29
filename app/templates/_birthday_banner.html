@@ -1,8 +1,10 @@
+{% if birthday_player %}
 <div class="birthday-banner" role="banner">
     <span class="birthday-emoji" aria-hidden="true">🎂</span>
     <div class="birthday-text">
-        <strong>¡Feliz cumpleaños, Pyrook!</strong>
-        <span>Que tus sueños se cumplan, que la vida te trate como te merecés y que tu internet hoy no te lagee ni un instante. Brindemos por vos. 🥂✨</span>
+        <strong>¡Feliz cumpleaños, {{ birthday_player.nickname }}!</strong>
+        <span>{{ birthday_message }}</span>
     </div>
     <span class="birthday-emoji" aria-hidden="true">🎉</span>
 </div>
+{% endif %}
