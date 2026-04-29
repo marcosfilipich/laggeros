@@ -176,6 +176,10 @@ def closed_reports():
 @bp.route("/new", methods=["GET", "POST"])
 @login_required
 def new_report():
+    if current_user.rol == "observer":
+        flash("Los observers no pueden generar reportes.", "error")
+        return redirect(url_for("reports.active_reports"))
+
     targets = _eligible_players(exclude_ids=[current_user.id])
 
     if request.method == "POST":
@@ -303,6 +307,7 @@ def detail(report_id):
         rep.status == "pending"
         and current_user.id != rep.reporter_id
         and current_user.id != rep.target_id
+        and current_user.rol != "observer"
     )
     cant_vote_reason = None
     if not can_vote:
@@ -312,6 +317,8 @@ def detail(report_id):
             cant_vote_reason = "Sos el que creaste este reporte, no podes votar."
         elif current_user.id == rep.target_id:
             cant_vote_reason = "Sos el target del reporte, no podes votar."
+        elif current_user.rol == "observer":
+            cant_vote_reason = "Como observer no podes votar (solo comentar)."
 
     # Build comments tree (self-referential)
     all_comments = (
@@ -377,6 +384,9 @@ def vote(report_id):
 
     if rep.status != "pending":
         flash("El reporte ya esta cerrado.", "error")
+        return redirect(url_for("reports.detail", report_id=rep.id))
+    if current_user.rol == "observer":
+        flash("Como observer no podes votar.", "error")
         return redirect(url_for("reports.detail", report_id=rep.id))
     if current_user.id in (rep.reporter_id, rep.target_id):
         flash("No podes votar en este reporte (sos reporter o target).", "error")

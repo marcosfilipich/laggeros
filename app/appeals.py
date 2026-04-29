@@ -101,6 +101,10 @@ def pending_appeals():
 @bp.route("/new", methods=["GET", "POST"])
 @login_required
 def new_appeal():
+    if current_user.rol == "observer":
+        flash("Los observers no pueden apelar.", "error")
+        return redirect(url_for("appeals.list_appeals"))
+
     eligible = _eligible_reports_for_appeal(current_user.id)
 
     if request.method == "POST":
@@ -200,11 +204,14 @@ def detail(appeal_id):
     can_vote = (
         appeal.status == "pending"
         and current_user.id not in excluded
+        and current_user.rol != "observer"
     )
     cant_vote_reason = None
     if not can_vote and not my_vote:
         if appeal.status != "pending":
             cant_vote_reason = f"La apelacion esta {appeal.status}, ya no se vota."
+        elif current_user.rol == "observer":
+            cant_vote_reason = "Como observer no podes votar (solo comentar)."
         elif current_user.id == appeal.appealer_id:
             cant_vote_reason = "Sos el apelante, no podes votar tu propia apelacion."
         elif current_user.id == appeal.report.reporter_id:
@@ -279,6 +286,10 @@ def vote(appeal_id):
 
     if appeal.status != "pending":
         flash("La apelacion ya esta cerrada.", "error")
+        return redirect(url_for("appeals.detail", appeal_id=appeal.id))
+
+    if current_user.rol == "observer":
+        flash("Como observer no podes votar.", "error")
         return redirect(url_for("appeals.detail", appeal_id=appeal.id))
 
     excluded = _appeal_voting_excluded_users(appeal)

@@ -1,0 +1,27 @@
+{% extends "base_auth.html" %}
+{% block title %}Registrarse{% endblock %}
+{% block content %}
+<h2>Pedir acceso como <span class="accent">observer</span></h2>
+<p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+    Los observers pueden ver el ranking, leer reportes y apelaciones, y comentar.
+    No pueden votar ni generar reportes. La cuenta queda <strong>pendiente de aprobacion</strong> del admin antes de poder entrar.
+</p>
+<form method="post">
+    <label>Nickname
+        <input type="text" name="nickname" required autofocus minlength="2" maxlength="80" autocomplete="username">
+    </label>
+    <label>Nombre real
+        <input type="text" name="nombre_real" required maxlength="120" autocomplete="name">
+    </label>
+    <label>Password (min 6 chars)
+        <input type="password" name="password" required minlength="6" autocomplete="new-password">
+    </label>
+    <label>Repetir password
+        <input type="password" name="confirm_password" required minlength="6" autocomplete="new-password">
+    </label>
+    <button type="submit">Pedir acceso</button>
+</form>
+<div style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--text-secondary);">
+    Ya tenes cuenta? <a href="{{ url_for('auth.login') }}" style="color: var(--accent);">Iniciar sesion</a>.
+</div>
+{% endblock %}

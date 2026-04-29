@@ -11,4 +11,7 @@
     </label>
     <button type="submit">Entrar</button>
 </form>
+<div style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--text-secondary);">
+    No sos capo? <a href="{{ url_for('auth.register') }}" style="color: var(--accent);">Pedi acceso como observer</a>.
+</div>
 {% endblock %}

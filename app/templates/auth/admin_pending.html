@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Pendientes{% endblock %}
+{% block content %}
+<div class="section">
+    <div class="section-header">
+        <h2>Solicitudes <span class="accent">pendientes</span></h2>
+        <span class="section-meta">{{ pending|length }} en total</span>
+    </div>
+
+    {% if pending %}
+    <table class="standings">
+        <thead>
+            <tr>
+                <th class="num">#</th>
+                <th>Nickname</th>
+                <th>Nombre real</th>
+                <th class="center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in pending %}
+            <tr>
+                <td class="pos">{{ u.id }}</td>
+                <td class="player">{{ u.nickname }}</td>
+                <td>{{ u.nombre_real or '-' }}</td>
+                <td class="center" style="display: flex; gap: 0.5rem; justify-content: center;">
+                    <form method="post" action="{{ url_for('auth.admin_approve', user_id=u.id) }}" style="display:inline">
+                        <button type="submit" class="btn-vote btn-vote-yes"
+                                onclick="return confirm('Aprobar a {{ u.nickname }} como observer?');">
+                            Aprobar
+                        </button>
+                    </form>
+                    <form method="post" action="{{ url_for('auth.admin_reject', user_id=u.id) }}" style="display:inline">
+                        <button type="submit" class="btn-vote btn-vote-no"
+                                onclick="return confirm('Rechazar y borrar la solicitud de {{ u.nickname }}?');">
+                            Rechazar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">No hay solicitudes pendientes.</div>
+    {% endif %}
+</div>
+{% endblock %}

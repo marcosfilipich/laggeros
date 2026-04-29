@@ -4,5 +4,7 @@
         Apelaciones pendientes
         {% if pending_appeal_count and pending_appeal_count > 0 %}<span class="nav-badge">{{ pending_appeal_count }}</span>{% endif %}
     </a>
+    {% if current_user.rol != 'observer' %}
     <a href="{{ url_for('appeals.new_appeal') }}" class="subnav-item subnav-cta {% if current == 'new' %}active{% endif %}">+ Generar apelacion</a>
+    {% endif %}
 </div>

@@ -122,6 +122,14 @@ def create_app():
         return {"unread_reply_count": count}
 
     @app.context_processor
+    def inject_pending_observer_count():
+        if not current_user.is_authenticated or current_user.rol != "admin":
+            return {"pending_observer_count": 0}
+        from app.models import Usuario
+        count = Usuario.query.filter(Usuario.rol == "pending_observer").count()
+        return {"pending_observer_count": count}
+
+    @app.context_processor
     def inject_pending_appeal_count():
         if not current_user.is_authenticated:
             return {"pending_appeal_count": 0}

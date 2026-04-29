@@ -44,6 +44,12 @@
                     {% if pending_appeal_count and pending_appeal_count > 0 %}<span class="nav-badge">{{ pending_appeal_count }}</span>{% endif %}
                 </a>
                 <a href="{{ url_for('main.history') }}" {% if request.endpoint == 'main.history' %}class="active"{% endif %}>Historial</a>
+                {% if current_user.rol == 'admin' %}
+                <a href="{{ url_for('auth.admin_pending') }}" {% if request.endpoint == 'auth.admin_pending' %}class="active"{% endif %}>
+                    Pendientes
+                    {% if pending_observer_count and pending_observer_count > 0 %}<span class="nav-badge">{{ pending_observer_count }}</span>{% endif %}
+                </a>
+                {% endif %}
                 <a href="{{ url_for('auth.change_password') }}" {% if request.endpoint == 'auth.change_password' %}class="active"{% endif %}>Configuracion</a>
                 <a href="{{ url_for('main.about') }}" class="pinned-bottom {% if request.endpoint and request.endpoint.startswith('main.about') %}active{% endif %}">About <span class="sidebar-icon">❓</span></a>
             </nav>
