@@ -33,8 +33,11 @@
             <input type="file" name="files" multiple accept=".jpg,.jpeg,.png,.gif,.webp,.pdf">
         </label>
 
-        <fieldset class="reviewer-pick">
-            <legend>Reviewers <span class="hint">(minimo 2 - no podes incluirte ni al target)</span> <span id="reviewer-count" class="reviewer-count">0 / 2</span></legend>
+        <div class="reviewer-pick">
+            <div class="reviewer-pick-header">
+                <span class="reviewer-pick-title">Reviewers <span class="hint">(minimo 2 - no podes incluirte ni al target)</span></span>
+                <span id="reviewer-count" class="reviewer-count">0 / 2</span>
+            </div>
             <div class="reviewer-grid">
                 {% for p in reviewers_pool %}
                 <label class="reviewer-checkbox" data-uid="{{ p.id }}">
@@ -43,7 +46,7 @@
                 </label>
                 {% endfor %}
             </div>
-        </fieldset>
+        </div>
 
         <button type="submit">Crear reporte</button>
     </form>

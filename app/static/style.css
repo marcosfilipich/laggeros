@@ -475,22 +475,30 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
 .reviewer-pick {
     border: 1px solid var(--border);
     background: var(--bg-primary);
-    padding: 0.4rem 1rem 1rem;
     margin: 0 0 1rem;
+    overflow: hidden;
 }
-.reviewer-pick legend {
+.reviewer-pick-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border);
+}
+.reviewer-pick-title {
     font-size: 0.75rem;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.6px;
     font-weight: 700;
-    padding: 0 0.5rem;
 }
 .reviewer-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
     gap: 0.5rem;
-    margin-top: 0.5rem;
+    padding: 0.85rem;
 }
 .reviewer-checkbox {
     position: relative;
@@ -554,8 +562,8 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
 
 /* counter for reviewers */
 .reviewer-count {
-    margin-left: 0.5rem;
-    padding: 0.1rem 0.5rem;
+    flex-shrink: 0;
+    padding: 0.15rem 0.55rem;
     border-radius: 2px;
     background: rgba(248, 81, 73, 0.12);
     color: #ff8a8a;
@@ -563,6 +571,7 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
     font-weight: 700;
     letter-spacing: 0.5px;
     border: 1px solid rgba(248, 81, 73, 0.4);
+    font-variant-numeric: tabular-nums;
 }
 .reviewer-count.reviewer-count-ok {
     background: rgba(46, 160, 67, 0.12);
