@@ -31,8 +31,31 @@ def _eligible_players(exclude_ids=()):
 @bp.route("/")
 @login_required
 def list_reports():
-    reports = Report.query.order_by(Report.created_at.desc()).all()
-    return render_template("reports/list.html", reports=reports)
+    return redirect(url_for("reports.active_reports"))
+
+
+@bp.route("/active")
+@login_required
+def active_reports():
+    reports = (
+        Report.query.filter(Report.status == "pending")
+        .order_by(Report.created_at.desc())
+        .all()
+    )
+    return render_template("reports/list.html", reports=reports, current="active",
+                           empty_msg="No hay reportes activos.")
+
+
+@bp.route("/closed")
+@login_required
+def closed_reports():
+    reports = (
+        Report.query.filter(Report.status.in_(["approved", "rejected", "cancelled"]))
+        .order_by(Report.created_at.desc())
+        .all()
+    )
+    return render_template("reports/list.html", reports=reports, current="closed",
+                           empty_msg="No hay reportes cerrados todavia.")
 
 
 @bp.route("/new", methods=["GET", "POST"])

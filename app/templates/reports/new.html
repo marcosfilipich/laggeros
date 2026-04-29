@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Nuevo reporte{% endblock %}
 {% block content %}
+{% set current = 'new' %}
+{% include "reports/_subnav.html" %}
+
 <div class="section">
     <div class="section-header">
         <h2>Nuevo <span class="accent">reporte</span></h2>

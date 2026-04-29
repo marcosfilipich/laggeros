@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Reportes{% endblock %}
 {% block content %}
+{% include "reports/_subnav.html" %}
+
 <div class="section">
     <div class="section-header">
-        <h2>Reportes <span class="accent">/</span> Listado</h2>
-        <a href="{{ url_for('reports.new_report') }}" class="btn-primary">+ Nuevo reporte</a>
+        <h2>{% if current == 'active' %}Reportes <span class="accent">activos</span>{% else %}Reportes <span class="accent">cerrados</span>{% endif %}</h2>
+        <span class="section-meta">{{ reports|length }} en total</span>
     </div>
     {% if reports %}
     <table class="standings">
@@ -33,7 +35,8 @@
     </table>
     {% else %}
     <div class="empty-state">
-        Todavia no hay reportes. <a href="{{ url_for('reports.new_report') }}">Genera el primero</a>.
+        {{ empty_msg or "No hay reportes." }}
+        {% if current == 'active' %}<a href="{{ url_for('reports.new_report') }}">Genera uno</a>.{% endif %}
     </div>
     {% endif %}
 </div>

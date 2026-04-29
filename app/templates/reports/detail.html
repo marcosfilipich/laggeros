@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Reporte #{{ report.id }}{% endblock %}
 {% block content %}
+{% set current = ('active' if report.status == 'pending' else 'closed') %}
+{% include "reports/_subnav.html" %}
+
 <div class="section">
     <div class="section-header">
         <h2>Reporte <span class="accent">#{{ report.id }}</span></h2>
