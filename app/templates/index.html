@@ -17,10 +17,12 @@
                 <th class="num">Puntos</th>
                 <th class="num">Reportes</th>
                 <th>Ultimo</th>
+                <th class="center">Racha</th>
             </tr>
         </thead>
         <tbody>
             {% for row in ranking %}
+            {% set s = streaks.get(row.id, {}) %}
             <tr>
                 <td class="pos">{{ loop.index }}</td>
                 <td class="player">{{ row.nickname }}</td>
@@ -28,6 +30,14 @@
                 <td class="num">{{ row.total_points }}</td>
                 <td class="num">{{ row.report_count }}</td>
                 <td style="color: var(--text-secondary);">{{ row.last_report | relative_days }}</td>
+                <td class="center">
+                    {% if s.red_days is defined %}
+                        <span class="streak streak-red" title="Lleva {% if s.red_days < 1 %}menos de 1 dia{% else %}{{ s.red_days }} dia{{ 's' if s.red_days != 1 else '' }}{% endif %} laggeandola">🔥</span>
+                    {% endif %}
+                    {% if s.blue_days is defined %}
+                        <span class="streak streak-blue" title="{{ s.blue_days }} dia{{ 's' if s.blue_days != 1 else '' }} sin laggearla">🔥</span>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>

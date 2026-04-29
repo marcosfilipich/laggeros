@@ -298,6 +298,20 @@ main { min-width: 0; }
     background: var(--bg-tertiary);
 }
 
+/* Streak indicators in ranking */
+.streak {
+    font-size: 1.05rem;
+    cursor: help;
+    margin: 0 0.1rem;
+    line-height: 1;
+    user-select: none;
+}
+.streak-red { filter: drop-shadow(0 0 4px rgba(230, 57, 70, 0.6)); }
+/* Recolor the orange fire emoji to a blue/cyan tone */
+.streak-blue {
+    filter: hue-rotate(180deg) saturate(2.2) drop-shadow(0 0 4px rgba(80, 180, 255, 0.65));
+}
+
 /* Severity-colored points pill (1=green, 10=red). Fixed width so 1 and 10 align. */
 .points-pill {
     --hue: calc((10 - var(--points)) * 13.3);
