@@ -200,7 +200,7 @@ function toggleMore(btn) {
 function toggleReply(id) {
     var f = document.getElementById('reply-form-' + id);
     if (!f) return;
-    if (f.style.display === 'none' || !f.style.display) {
+    if (f.style.display === 'none') {
         f.style.display = '';
         var ta = f.querySelector('textarea');
         if (ta) ta.focus();
