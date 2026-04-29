@@ -405,6 +405,25 @@ main { min-width: 0; }
     border-bottom-color: white;
 }
 
+/* Points delta in history (signed, colored by sign) */
+.pts-delta {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+    border: 1px solid;
+}
+.pts-pos {                      /* +N  : peor para el player (mas puntos = peor en ranking inverso) */
+    color: #ff8a8a;
+    border-color: rgba(248, 81, 73, 0.45);
+    background: rgba(248, 81, 73, 0.10);
+}
+.pts-neg {                      /* -N  : mejor para el player */
+    color: #7fdb98;
+    border-color: rgba(46, 160, 67, 0.45);
+    background: rgba(46, 160, 67, 0.10);
+}
+
 /* Streak indicators in ranking */
 .streak {
     font-size: 1.05rem;

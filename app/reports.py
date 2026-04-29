@@ -390,7 +390,11 @@ def _check_and_apply_decision(rep):
 
 def _apply_approval(rep):
     rep.status = "approved"
-    db.session.add(Punto(player_id=rep.target_id, points=rep.points))
+    db.session.add(Punto(
+        player_id=rep.target_id,
+        points=rep.points,
+        motivo=Punto.MOTIVO_REPORT_APPROVED,
+    ))
     db.session.commit()
 
 
@@ -404,7 +408,11 @@ def _apply_rejection(rep):
     penalty_applied = False
     if reporter.reportes_falsos_count >= FALSE_REPORTS_THRESHOLD:
         reporter.reportes_falsos_count = 0
-        db.session.add(Punto(player_id=reporter.id, points=FALSE_REPORTS_PENALTY_POINTS))
+        db.session.add(Punto(
+            player_id=reporter.id,
+            points=FALSE_REPORTS_PENALTY_POINTS,
+            motivo=Punto.MOTIVO_FALSE_REPORTS,
+        ))
         penalty_applied = True
     db.session.commit()
     return penalty_applied

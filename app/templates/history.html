@@ -3,7 +3,7 @@
 {% block content %}
 <div class="section">
     <div class="section-header">
-        <h2>Ultimos <span class="accent">100</span> reportes</h2>
+        <h2>Ultimos <span class="accent">100</span> movimientos de puntos</h2>
         <span class="section-meta">{{ reports|length }} mostrados</span>
     </div>
     {% if reports %}
@@ -12,7 +12,8 @@
             <tr>
                 <th>Fecha (UTC)</th>
                 <th>Player</th>
-                <th class="num">Puntos</th>
+                <th class="center">Puntos</th>
+                <th>Motivo</th>
             </tr>
         </thead>
         <tbody>
@@ -20,11 +21,16 @@
             <tr>
                 <td>{{ r.date_inserted.strftime("%Y-%m-%d %H:%M") }}</td>
                 <td class="player">{{ r.player.nickname }}</td>
-                <td class="num">{{ r.points }}</td>
+                <td class="center">
+                    <span class="pts-delta {% if r.points > 0 %}pts-pos{% else %}pts-neg{% endif %}">
+                        {% if r.points > 0 %}+{% endif %}{{ r.points }}
+                    </span>
+                </td>
+                <td style="color: var(--text-secondary);">{{ r.motivo or "-" }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    {% else %}<div class="empty-state">Sin reportes todavia.</div>{% endif %}
+    {% else %}<div class="empty-state">Sin movimientos todavia.</div>{% endif %}
 </div>
 {% endblock %}

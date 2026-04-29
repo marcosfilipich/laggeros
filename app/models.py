@@ -32,9 +32,15 @@ class Usuario(db.Model, UserMixin):
 class Punto(db.Model):
     __tablename__ = "puntos"
 
+    MOTIVO_REPORT_APPROVED = "Reporte aceptado"
+    MOTIVO_FALSE_REPORTS = "Falsos reportes generados"
+    MOTIVO_APPEAL_REJECTED = "Apelacion rechazada"
+    MOTIVO_APPEAL_APPROVED = "Apelacion aprobada"
+
     id = db.Column(db.Integer, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
     points = db.Column(db.Integer, nullable=False)
+    motivo = db.Column(db.String(40), nullable=True)
     date_inserted = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 

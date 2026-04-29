@@ -208,14 +208,22 @@ def _check_and_apply_appeal_decision(appeal):
         appeal.resolved_at = datetime.utcnow()
         # Revertir los puntos del reporte original + 1 a favor (negativo = beneficio)
         revert = -(appeal.report.points + APPEAL_APPROVAL_BONUS)
-        db.session.add(Punto(player_id=appeal.appealer_id, points=revert))
+        db.session.add(Punto(
+            player_id=appeal.appealer_id,
+            points=revert,
+            motivo=Punto.MOTIVO_APPEAL_APPROVED,
+        ))
         db.session.commit()
         return {"status": "approved"}
 
     if no_count >= APPEAL_NO_THRESHOLD:
         appeal.status = "rejected"
         appeal.resolved_at = datetime.utcnow()
-        db.session.add(Punto(player_id=appeal.appealer_id, points=APPEAL_REJECTION_PENALTY))
+        db.session.add(Punto(
+            player_id=appeal.appealer_id,
+            points=APPEAL_REJECTION_PENALTY,
+            motivo=Punto.MOTIVO_APPEAL_REJECTED,
+        ))
         db.session.commit()
         return {"status": "rejected"}
 
