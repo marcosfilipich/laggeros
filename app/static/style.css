@@ -364,133 +364,191 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
 }
 
 /* ===== Forms ===== */
-.form-body { padding: 1rem; }
-.form-body label {
+.form-body { padding: 1.25rem 1.25rem 1.5rem; }
+
+/* top-level field labels (do NOT cascade into reviewer-checkbox sub-labels) */
+.form-body > label {
     display: block;
-    margin-bottom: 0.85rem;
-    font-size: 0.78rem;
+    margin-bottom: 1rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-}
-.form-body input, .form-body select {
-    display: block;
-    width: 100%;
-    max-width: 400px;
-    margin-top: 0.3rem;
-    padding: 0.55rem 0.75rem;
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    font-size: 0.95rem;
-    font-family: inherit;
-}
-.form-body input:focus, .form-body select:focus {
-    outline: none;
-    border-color: var(--accent);
-}
-.form-body button {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 0.65rem 1.5rem;
-    font-size: 0.8rem;
+    letter-spacing: 0.6px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.7px;
-    cursor: pointer;
-    margin-top: 0.5rem;
 }
-.form-body button:hover { background: var(--accent-hover); }
 .form-body .hint {
     color: var(--text-muted);
     font-weight: 400;
     text-transform: none;
     letter-spacing: 0;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
+    margin-left: 0.25rem;
 }
-.settings-form { max-width: 420px; }
 
+/* base controls: input/select/textarea share the same look */
+.form-body input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),
+.form-body select,
 .form-body textarea {
     display: block;
     width: 100%;
-    margin-top: 0.3rem;
-    padding: 0.55rem 0.75rem;
+    max-width: 500px;
+    margin-top: 0.4rem;
+    padding: 0.6rem 0.8rem;
     background: var(--bg-primary);
     border: 1px solid var(--border);
     color: var(--text-primary);
     font-size: 0.9rem;
     font-family: inherit;
-    resize: vertical;
-    min-height: 60px;
+    line-height: 1.4;
+    transition: border-color 0.15s;
 }
-.form-body textarea:focus { outline: none; border-color: var(--accent); }
+.form-body input:focus,
+.form-body select:focus,
+.form-body textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+.form-body input::placeholder,
+.form-body textarea::placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+}
+.form-body textarea {
+    resize: vertical;
+    min-height: 84px;
+}
+
+/* file input: dashed dropzone-look + styled native button */
 .form-body input[type="file"] {
     display: block;
     width: 100%;
-    max-width: 100%;
-    margin-top: 0.3rem;
-    padding: 0.5rem;
+    max-width: 500px;
+    margin-top: 0.4rem;
+    padding: 0;
     background: var(--bg-primary);
     border: 1px dashed var(--border);
     color: var(--text-secondary);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+.form-body input[type="file"]:hover { border-color: var(--text-secondary); }
+.form-body input[type="file"]:focus { outline: none; border-color: var(--accent); }
+.form-body input[type="file"]::file-selector-button {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: none;
+    border-right: 1px solid var(--border);
+    padding: 0.6rem 1.1rem;
+    margin-right: 0.85rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.form-body input[type="file"]::file-selector-button:hover {
+    background: var(--accent);
+    color: white;
 }
 
-/* ===== Reviewers picker ===== */
+/* submit button */
+.form-body button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.7rem 1.6rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    cursor: pointer;
+    margin-top: 0.75rem;
+    transition: background 0.15s;
+}
+.form-body button:hover { background: var(--accent-hover); }
+
+.settings-form { max-width: 420px; }
+
+/* ===== Reviewers picker (toggle pills) ===== */
 .reviewer-pick {
     border: 1px solid var(--border);
     background: var(--bg-primary);
-    padding: 0.85rem 1rem;
-    margin-bottom: 0.85rem;
+    padding: 0.4rem 1rem 1rem;
+    margin: 0 0 1rem;
 }
 .reviewer-pick legend {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-    padding: 0 0.4rem;
+    letter-spacing: 0.6px;
+    font-weight: 700;
+    padding: 0 0.5rem;
 }
 .reviewer-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 0.4rem;
-    margin-top: 0.6rem;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
 }
 .reviewer-checkbox {
-    display: flex !important;
+    position: relative;
+    display: block;
+    margin: 0;
+    cursor: pointer;
+    user-select: none;
+}
+.reviewer-checkbox input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+.reviewer-checkbox span {
+    display: flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.6rem;
+    justify-content: center;
+    padding: 0.55rem 0.75rem;
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    margin: 0 !important;
-    text-transform: none !important;
-    letter-spacing: 0 !important;
-    font-weight: 500 !important;
-    font-size: 0.82rem !important;
-    color: var(--text-primary) !important;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
-}
-.reviewer-checkbox:hover { border-color: var(--text-secondary); }
-.reviewer-checkbox input { margin: 0; cursor: pointer; }
-.reviewer-checkbox.reviewer-auto {
-    border-color: var(--accent);
-    background: rgba(230, 57, 70, 0.08);
-    cursor: not-allowed;
-    opacity: 0.85;
-}
-.reviewer-checkbox.reviewer-auto::after {
-    content: "auto";
-    margin-left: auto;
-    font-size: 0.65rem;
-    color: var(--accent);
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-weight: 700;
+    transition: all 0.15s;
+}
+.reviewer-checkbox:hover span {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+}
+.reviewer-checkbox input:checked + span {
+    background: rgba(230, 57, 70, 0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.reviewer-checkbox input:focus-visible + span {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.3);
+}
+.reviewer-checkbox.reviewer-auto { cursor: not-allowed; }
+.reviewer-checkbox.reviewer-auto span {
+    background: rgba(230, 57, 70, 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+    opacity: 0.85;
+}
+.reviewer-checkbox.reviewer-auto span::after {
+    content: "auto";
+    margin-left: 0.4rem;
+    padding: 0.05rem 0.35rem;
+    background: var(--accent);
+    color: white;
+    font-size: 0.6rem;
+    border-radius: 2px;
+    letter-spacing: 0.4px;
 }
 
 /* ===== Status badges ===== */
