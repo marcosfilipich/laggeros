@@ -298,14 +298,14 @@ main { min-width: 0; }
     background: var(--bg-tertiary);
 }
 
-/* Severity-colored points pill (1=green, 10=red) */
+/* Severity-colored points pill (1=green, 10=red). Fixed width so 1 and 10 align. */
 .points-pill {
     --hue: calc((10 - var(--points)) * 13.3);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 28px;
-    padding: 0.2rem 0.55rem;
+    width: 40px;
+    padding: 0.25rem 0;
     background: hsl(var(--hue), 55%, 22%);
     color: hsl(var(--hue), 92%, 78%);
     border: 1px solid hsl(var(--hue), 60%, 40%);
@@ -314,10 +314,11 @@ main { min-width: 0; }
     font-size: 0.78rem;
     font-variant-numeric: tabular-nums;
     line-height: 1;
+    text-align: center;
 }
 .points-pill-lg {
-    min-width: 40px;
-    padding: 0.4rem 0.85rem;
+    width: 56px;
+    padding: 0.45rem 0;
     font-size: 1rem;
 }
 
@@ -402,6 +403,8 @@ table.standings th {
     white-space: nowrap;
 }
 table.standings th.num { text-align: right; }
+table.standings th.center,
+table.standings td.center { text-align: center; }
 table.standings td {
     padding: 0.5rem 0.75rem;
     border-bottom: 1px solid var(--border);
