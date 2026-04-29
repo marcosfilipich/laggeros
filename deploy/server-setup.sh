@@ -160,7 +160,7 @@ server {
     listen 80;
     server_name ${SERVER_NAME};
 
-    client_max_body_size 4M;
+    client_max_body_size 25M;
 
     location /static/ {
         alias ${APP_DIR}/app/static/;
