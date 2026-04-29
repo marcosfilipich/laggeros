@@ -7,7 +7,12 @@
 <div class="section">
     <div class="section-header">
         <h2>Reporte <span class="accent">#{{ report.id }}</span></h2>
-        <span class="badge badge-{{ report.status }}">{{ report.status }}</span>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+            <a href="{{ share_url }}" target="_blank" rel="noopener" class="wa-share-btn" title="Abre WhatsApp con el mensaje listo">
+                Compartir en WhatsApp
+            </a>
+            <span class="badge badge-{{ report.status }}">{{ report.status }}</span>
+        </div>
     </div>
     <div class="report-meta">
         <div><span class="meta-label">Reporter</span> <strong>{{ report.reporter.nickname }}</strong></div>

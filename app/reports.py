@@ -1,6 +1,7 @@
 import os
 import uuid
 from datetime import datetime
+from urllib.parse import quote
 from werkzeug.utils import secure_filename
 from flask import (
     Blueprint, render_template, request, redirect, url_for, flash,
@@ -30,6 +31,20 @@ def _attachment_counts():
         .all()
     )
     return dict(rows)
+
+
+def _whatsapp_share_url(rep):
+    """Construye un wa.me link con el resumen del reporte para compartir en WhatsApp."""
+    detail = url_for("reports.detail", report_id=rep.id, _external=True)
+    reviewers = " ".join(f"@{r.usuario.nickname}" for r in rep.reviewers) or "(ninguno)"
+    text = (
+        f"@{rep.reporter.nickname} reporto a @{rep.target.nickname}\n\n"
+        f"\"{rep.description}\"\n\n"
+        f"Puntos: {rep.points}/10\n"
+        f"Reviewers: {reviewers}\n\n"
+        f"Detalle: {detail}"
+    )
+    return "https://wa.me/?text=" + quote(text)
 
 
 def _mark_report_view(user_id, report_id):
@@ -240,7 +255,7 @@ def new_report():
             ))
 
         db.session.commit()
-        flash(f"Reporte #{rep.id} creado.", "success")
+        flash(f"Reporte #{rep.id} creado. Compartilo en WhatsApp con el boton de arriba para avisarle al grupo.", "success")
         return redirect(url_for("reports.detail", report_id=rep.id))
 
     return render_template(
@@ -319,6 +334,7 @@ def detail(report_id):
         top_level_comments=top_level_comments,
         children_by_parent=children_by_parent,
         total_comments=len(all_comments),
+        share_url=_whatsapp_share_url(rep),
     )
 
 
