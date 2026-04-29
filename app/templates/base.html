@@ -34,7 +34,7 @@
                 </a>
                 <a href="{{ url_for('main.history') }}" {% if request.endpoint == 'main.history' %}class="active"{% endif %}>Historial</a>
                 <a href="{{ url_for('auth.change_password') }}" {% if request.endpoint == 'auth.change_password' %}class="active"{% endif %}>Configuracion</a>
-                <a href="{{ url_for('main.about') }}" {% if request.endpoint and request.endpoint.startswith('main.about') %}class="active"{% endif %}>About <span class="sidebar-icon">❓</span></a>
+                <a href="{{ url_for('main.about') }}" class="pinned-bottom {% if request.endpoint and request.endpoint.startswith('main.about') %}active{% endif %}">About <span class="sidebar-icon">❓</span></a>
             </nav>
         </aside>
 
