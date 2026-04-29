@@ -13,7 +13,7 @@ from app.models import Usuario, Report, Vote, Punto, Appeal, AppealVote, AppealA
 bp = Blueprint("appeals", __name__, url_prefix="/appeals")
 
 APPEAL_YES_THRESHOLD = 5            # >= 5 votos SI -> approved
-APPEAL_NO_THRESHOLD = 2             # >= 2 votos NO -> rejected (no dan los numeros)
+APPEAL_NO_THRESHOLD = 3             # >= 3 votos NO -> rejected (con 12 players ya no dan los numeros)
 APPEAL_REJECTION_PENALTY = 3        # puntos para el apelante si pierde la apelacion
 APPEAL_APPROVAL_BONUS = 1           # punto extra a favor del apelante si gana
 
