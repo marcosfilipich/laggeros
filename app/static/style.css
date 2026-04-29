@@ -37,6 +37,9 @@ a:hover { color: var(--accent-hover); }
 header {
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
 }
 .header-top {
     padding: 0.85rem 1rem;
@@ -232,27 +235,24 @@ header h1 .accent { color: var(--accent); }
     display: flex;
     flex-direction: column;
     position: sticky;
-    top: 0;
-    padding-bottom: 48px;  /* deja espacio para el item fijo del fondo */
+    top: 60px;            /* debajo del header sticky */
+    height: calc(100vh - 60px);
+    overflow-y: auto;
 }
-/* About anclado al borde inferior del viewport, alineado con la sidebar (220px) */
 .sidebar nav .pinned-bottom {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 220px;
-    background: var(--bg-secondary);
+    margin-top: auto;
     border-top: 1px solid var(--border);
-    border-right: 1px solid var(--border);
     border-bottom: none;
-    z-index: 10;
 }
 @media (max-width: 768px) {
-    .sidebar nav { padding-bottom: 0; }
-    .sidebar nav .pinned-bottom {
+    .sidebar nav {
         position: static;
-        width: auto;
-        border-right: none;
+        height: auto;
+        overflow-y: visible;
+    }
+    .sidebar nav .pinned-bottom {
+        margin-top: 0;
+        border-top: none;
         border-bottom: 1px solid var(--border);
     }
 }
