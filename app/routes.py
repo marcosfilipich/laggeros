@@ -2,7 +2,7 @@ from flask import Blueprint, render_template
 from flask_login import login_required
 from sqlalchemy import func
 from app import db
-from app.models import Player, Punto
+from app.models import Usuario, Punto
 
 bp = Blueprint("main", __name__)
 
@@ -12,15 +12,16 @@ bp = Blueprint("main", __name__)
 def index():
     ranking = (
         db.session.query(
-            Player.id,
-            Player.nickname,
-            Player.nombre_real,
+            Usuario.id,
+            Usuario.nickname,
+            Usuario.nombre_real,
             func.coalesce(func.sum(Punto.points), 0).label("total_points"),
             func.count(Punto.id).label("report_count"),
             func.max(Punto.date_inserted).label("last_report"),
         )
-        .outerjoin(Punto, Punto.player_id == Player.id)
-        .group_by(Player.id, Player.nickname, Player.nombre_real)
+        .outerjoin(Punto, Punto.player_id == Usuario.id)
+        .filter(Usuario.rol == "player")
+        .group_by(Usuario.id, Usuario.nickname, Usuario.nombre_real)
         .order_by(func.coalesce(func.sum(Punto.points), 0).desc())
         .all()
     )

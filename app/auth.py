@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
-from app.models import Player
+from app.models import Usuario
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -15,13 +15,13 @@ def login():
         nickname = (request.form.get("nickname") or "").strip()
         password = request.form.get("password") or ""
 
-        player = Player.query.filter_by(nickname=nickname).first()
-        if not player or not player.check_password(password):
+        usuario = Usuario.query.filter_by(nickname=nickname).first()
+        if not usuario or not usuario.check_password(password):
             flash("Nickname o password incorrectos.", "error")
             return redirect(url_for("auth.login"))
 
-        login_user(player, remember=True)
-        if player.must_change_password:
+        login_user(usuario, remember=True)
+        if usuario.must_change_password:
             return redirect(url_for("auth.change_password"))
 
         next_url = request.args.get("next")

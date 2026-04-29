@@ -21,8 +21,8 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        from app.models import Player
-        return Player.query.get(int(user_id))
+        from app.models import Usuario
+        return Usuario.query.get(int(user_id))
 
     @app.before_request
     def force_password_change():
@@ -47,27 +47,37 @@ def create_app():
 
     @app.cli.command("seed")
     def seed():
-        from app.models import Player
+        from app.models import Usuario
+        # nickname, nombre_real, rol
         defaults = [
-            ("Queso", "Marcos"),
-            ("Ghiro", "Ghiro"),
-            ("Ando", "Ando"),
-            ("Pyrook", "Nacho"),
-            ("Tompson", "Tompson"),
-            ("Lommi", "Lommi"),
-            ("Feri", "Federico"),
-            ("Pancho", "Pancho"),
-            ("Marqui", "Marcos"),
-            ("Juani", "Juani"),
-            ("Lucho", "Lucho"),
+            ("Queso", "Marcos", "player"),
+            ("Ghiro", "Ghiro", "player"),
+            ("Ando", "Ando", "player"),
+            ("Pyrook", "Nacho", "player"),
+            ("Tompson", "Tompson", "player"),
+            ("Lommi", "Lommi", "player"),
+            ("Feri", "Federico", "player"),
+            ("Pancho", "Pancho", "player"),
+            ("Marqui", "Marcos", "player"),
+            ("Juani", "Juani", "player"),
+            ("Lucho", "Lucho", "player"),
         ]
         added = 0
-        for nickname, nombre_real in defaults:
-            if not Player.query.filter_by(nickname=nickname).first():
-                db.session.add(Player(nickname=nickname, nombre_real=nombre_real))
+        for nickname, nombre_real, rol in defaults:
+            if not Usuario.query.filter_by(nickname=nickname).first():
+                db.session.add(Usuario(nickname=nickname, nombre_real=nombre_real, rol=rol))
                 added += 1
+
+        # Admin user con password "admin" (no fuerza cambio para usar admin/admin directo)
+        admin = Usuario.query.filter_by(nickname="admin").first()
+        if admin is None:
+            admin = Usuario(nickname="admin", nombre_real=None, rol="admin", must_change_password=False)
+            admin.set_password("admin")
+            db.session.add(admin)
+            added += 1
+
         db.session.commit()
-        print(f"Seeded {added} new player(s) (skipped existing).")
+        print(f"Seeded {added} new usuario(s) (skipped existing).")
 
     @app.cli.command("reset-db")
     @click.confirmation_option(prompt="Esto borra TODAS las tablas y datos. Seguro?")
@@ -83,34 +93,34 @@ def create_app():
     @click.argument("nickname")
     @click.argument("password")
     def set_password_cmd(nickname, password):
-        from app.models import Player
-        p = Player.query.filter_by(nickname=nickname).first()
-        if not p:
-            print(f"Player '{nickname}' no encontrado.")
+        from app.models import Usuario
+        u = Usuario.query.filter_by(nickname=nickname).first()
+        if not u:
+            print(f"Usuario '{nickname}' no encontrado.")
             return
-        p.set_password(password)
-        p.must_change_password = True
+        u.set_password(password)
+        u.must_change_password = True
         db.session.commit()
         print(f"Password seteada para '{nickname}' (debe cambiarla en el primer login).")
 
     @app.cli.command("init-passwords")
     def init_passwords():
-        """Genera passwords random para todos los players sin password seteada."""
-        from app.models import Player
-        rows = Player.query.order_by(Player.id).all()
+        """Genera passwords random para todos los usuarios sin password seteada."""
+        from app.models import Usuario
+        rows = Usuario.query.order_by(Usuario.id).all()
         print()
-        print(f"{'Nickname':<12} {'Nombre':<18} Password inicial")
-        print("-" * 60)
-        for p in rows:
-            if p.password_hash:
-                print(f"{p.nickname:<12} {p.nombre_real or '-':<18} (ya tiene password)")
+        print(f"{'Nickname':<12} {'Nombre':<18} {'Rol':<8} Password inicial")
+        print("-" * 70)
+        for u in rows:
+            if u.password_hash:
+                print(f"{u.nickname:<12} {u.nombre_real or '-':<18} {u.rol:<8} (ya tiene password)")
                 continue
             pw = secrets.token_urlsafe(6)
-            p.set_password(pw)
-            p.must_change_password = True
-            print(f"{p.nickname:<12} {p.nombre_real or '-':<18} {pw}")
+            u.set_password(pw)
+            u.must_change_password = True
+            print(f"{u.nickname:<12} {u.nombre_real or '-':<18} {u.rol:<8} {pw}")
         db.session.commit()
         print()
-        print("Compartir estas passwords con cada player. Las van a tener que cambiar al primer login.")
+        print("Compartir estas passwords con cada usuario. Las van a tener que cambiar al primer login.")
 
     return app
