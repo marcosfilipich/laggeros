@@ -201,6 +201,7 @@ def create_app():
             "Tompson": _date(2001, 2, 28),
             "Pancho": _date(2000, 9, 3),
             "Feri": _date(2000, 6, 25),
+            "Opro": _date(2000, 2, 24),
         }
         bday_added = 0
         for nick, bd in bday_defaults.items():
