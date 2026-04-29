@@ -560,6 +560,74 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
     font-weight: 700;
 }
 
+/* info tooltip ("i" icon) */
+.info-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--text-secondary);
+    color: var(--bg-primary);
+    font-size: 0.65rem;
+    font-style: italic;
+    font-weight: 800;
+    font-family: Georgia, "Times New Roman", serif;
+    cursor: help;
+    margin-left: 0.3rem;
+    user-select: none;
+    vertical-align: middle;
+    transition: background 0.15s;
+}
+.info-icon:hover, .info-icon:focus { background: var(--accent); outline: none; }
+
+.info-icon .tooltip-text {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 0;
+    visibility: hidden;
+    opacity: 0;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 0.7rem 0.9rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    width: 300px;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+    font-style: normal;
+    text-align: left;
+    z-index: 50;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.15s, visibility 0.15s;
+    pointer-events: none;
+}
+.info-icon .tooltip-text strong { color: var(--accent); font-weight: 700; }
+.info-icon .tooltip-text em { color: #7fdb98; font-style: normal; font-weight: 700; }
+
+.info-icon:hover .tooltip-text,
+.info-icon:focus .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+.info-icon .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 6px;
+    border: 6px solid transparent;
+    border-top-color: var(--bg-tertiary);
+    margin-top: -1px;
+}
+
+@media (max-width: 480px) {
+    .info-icon .tooltip-text { width: 240px; }
+}
+
 /* counter for reviewers */
 .reviewer-count {
     flex-shrink: 0;
