@@ -52,12 +52,14 @@ def active_reports():
 @bp.route("/pending")
 @login_required
 def pending_reports():
-    """Reportes activos donde el usuario fue asignado como reviewer."""
+    """Reportes activos donde fuiste asignado como reviewer y aun no votaste."""
+    voted_subq = db.session.query(Vote.report_id).filter(Vote.usuario_id == current_user.id)
     reports = (
         Report.query
         .join(ReportReviewer, ReportReviewer.report_id == Report.id)
         .filter(ReportReviewer.usuario_id == current_user.id)
         .filter(Report.status == "pending")
+        .filter(~Report.id.in_(voted_subq))
         .order_by(Report.created_at.desc())
         .all()
     )

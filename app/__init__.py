@@ -52,6 +52,24 @@ def create_app():
             return "hace 1 dia"
         return f"hace {days} dias"
 
+    @app.context_processor
+    def inject_pending_review_count():
+        if not current_user.is_authenticated:
+            return {"pending_review_count": 0}
+        from sqlalchemy import func, and_
+        from app.models import Report, ReportReviewer, Vote
+        count = (
+            db.session.query(func.count(Report.id.distinct()))
+            .join(ReportReviewer, ReportReviewer.report_id == Report.id)
+            .outerjoin(Vote, and_(Vote.report_id == Report.id,
+                                  Vote.usuario_id == current_user.id))
+            .filter(Report.status == "pending")
+            .filter(ReportReviewer.usuario_id == current_user.id)
+            .filter(Vote.id.is_(None))
+            .scalar()
+        ) or 0
+        return {"pending_review_count": count}
+
     @app.cli.command("init-db")
     def init_db():
         from app import models  # noqa: F401
