@@ -1,5 +1,6 @@
 <div class="subnav">
     <a href="{{ url_for('reports.active_reports') }}" class="subnav-item {% if current == 'active' %}active{% endif %}">Reportes activos</a>
+    <a href="{{ url_for('reports.pending_reports') }}" class="subnav-item {% if current == 'pending' %}active{% endif %}">Reportes pendientes</a>
     <a href="{{ url_for('reports.closed_reports') }}" class="subnav-item {% if current == 'closed' %}active{% endif %}">Reportes cerrados</a>
     <a href="{{ url_for('reports.new_report') }}" class="subnav-item {% if current == 'new' %}active{% endif %}">Generar reporte</a>
 </div>

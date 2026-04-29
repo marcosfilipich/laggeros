@@ -46,6 +46,26 @@ def active_reports():
                            empty_msg="No hay reportes activos.")
 
 
+@bp.route("/pending")
+@login_required
+def pending_reports():
+    """Reportes activos donde el usuario fue asignado como reviewer."""
+    reports = (
+        Report.query
+        .join(ReportReviewer, ReportReviewer.report_id == Report.id)
+        .filter(ReportReviewer.usuario_id == current_user.id)
+        .filter(Report.status == "pending")
+        .order_by(Report.created_at.desc())
+        .all()
+    )
+    return render_template(
+        "reports/list.html",
+        reports=reports,
+        current="pending",
+        empty_msg="No tenes reportes pendientes para revisar.",
+    )
+
+
 @bp.route("/closed")
 @login_required
 def closed_reports():
