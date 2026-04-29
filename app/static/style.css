@@ -137,7 +137,72 @@ header h1 .accent { color: var(--accent); }
 .user-menu {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
+}
+
+/* Bell notification button */
+.bell-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: border-color 0.15s, background 0.15s;
+    user-select: none;
+}
+.bell-btn:hover {
+    border-color: var(--text-secondary);
+    background: var(--hover-bg);
+}
+.bell-icon {
+    font-size: 1.05rem;
+    line-height: 1;
+    filter: grayscale(0.4);
+}
+.bell-btn:hover .bell-icon {
+    filter: none;
+    animation: bell-shake 0.5s ease-in-out;
+}
+@keyframes bell-shake {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-12deg); }
+    75% { transform: rotate(12deg); }
+}
+.bell-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background: var(--accent);
+    color: white;
+    border-radius: 8px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--bg-secondary);
+    line-height: 1;
+    letter-spacing: 0;
+}
+
+/* Red dot indicator on table rows (e.g. unread comment replies) */
+.row-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 0.4rem;
+    vertical-align: middle;
+    box-shadow: 0 0 6px rgba(230, 57, 70, 0.7);
 }
 .user-chip {
     display: inline-flex;

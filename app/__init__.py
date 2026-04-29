@@ -92,6 +92,14 @@ def create_app():
         return {"pending_review_count": count}
 
     @app.context_processor
+    def inject_unread_reply_count():
+        if not current_user.is_authenticated:
+            return {"unread_reply_count": 0}
+        from app.reports import unread_replies_for
+        count, _ = unread_replies_for(current_user.id)
+        return {"unread_reply_count": count}
+
+    @app.context_processor
     def inject_pending_appeal_count():
         if not current_user.is_authenticated:
             return {"pending_appeal_count": 0}

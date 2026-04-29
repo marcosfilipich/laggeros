@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Laggeros{% endblock %} - Capos</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -12,6 +13,10 @@
             <h1><a href="{{ url_for('main.index') }}">LAG<span class="accent">GEROS</span></a></h1>
             {% if current_user.is_authenticated %}
                 <div class="user-menu">
+                    <a href="{{ url_for('reports.active_reports') }}" class="bell-btn" title="Notificaciones">
+                        <span class="bell-icon">🔔</span>
+                        {% if unread_reply_count and unread_reply_count > 0 %}<span class="bell-badge">{{ unread_reply_count }}</span>{% endif %}
+                    </a>
                     <span class="user-chip">
                         <span class="user-chip-dot"></span>
                         {{ current_user.nickname }}

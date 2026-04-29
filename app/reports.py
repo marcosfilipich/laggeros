@@ -9,7 +9,7 @@ from flask import (
 from flask_login import login_required, current_user
 from sqlalchemy import func
 from app import db
-from app.models import Usuario, Report, ReportReviewer, ReportAttachment, Vote, Punto, Comment
+from app.models import Usuario, Report, ReportReviewer, ReportAttachment, Vote, Punto, Comment, ReportView
 
 
 def _comment_counts():
@@ -30,6 +30,45 @@ def _attachment_counts():
         .all()
     )
     return dict(rows)
+
+
+def _mark_report_view(user_id, report_id):
+    """Upsert: marca que `user_id` vio `report_id` ahora."""
+    rv = ReportView.query.filter_by(usuario_id=user_id, report_id=report_id).first()
+    now = datetime.utcnow()
+    if rv:
+        rv.last_viewed_at = now
+    else:
+        db.session.add(ReportView(usuario_id=user_id, report_id=report_id, last_viewed_at=now))
+    db.session.commit()
+
+
+def unread_replies_for(user_id):
+    """Returns (count, set_of_report_ids) con replies a comentarios del user
+    que ocurrieron despues de su ultimo view del reporte (o nunca lo vio).
+    No cuenta replies del propio user."""
+    my_comment_ids = [c.id for c in Comment.query.filter_by(usuario_id=user_id).all()]
+    if not my_comment_ids:
+        return 0, set()
+
+    views = {
+        v.report_id: v.last_viewed_at
+        for v in ReportView.query.filter_by(usuario_id=user_id).all()
+    }
+    replies = (
+        Comment.query
+        .filter(Comment.parent_id.in_(my_comment_ids))
+        .filter(Comment.usuario_id != user_id)
+        .all()
+    )
+    count = 0
+    report_ids = set()
+    for r in replies:
+        last_view = views.get(r.report_id)
+        if last_view is None or r.created_at > last_view:
+            count += 1
+            report_ids.add(r.report_id)
+    return count, report_ids
 
 TOTAL_YES_THRESHOLD = 6
 NO_REJECTION_THRESHOLD = 5            # >= 5 votos NO -> rechazado
@@ -69,10 +108,12 @@ def active_reports():
         .order_by(Report.created_at.desc())
         .all()
     )
+    _, unread_set = unread_replies_for(current_user.id)
     return render_template("reports/list.html", reports=reports, current="active",
                            empty_msg="No hay reportes activos.",
                            comment_counts=_comment_counts(),
-                           attachment_counts=_attachment_counts())
+                           attachment_counts=_attachment_counts(),
+                           unread_set=unread_set)
 
 
 @bp.route("/pending")
@@ -89,6 +130,7 @@ def pending_reports():
         .order_by(Report.created_at.desc())
         .all()
     )
+    _, unread_set = unread_replies_for(current_user.id)
     return render_template(
         "reports/list.html",
         reports=reports,
@@ -96,6 +138,7 @@ def pending_reports():
         empty_msg="No tenes reportes pendientes para revisar.",
         comment_counts=_comment_counts(),
         attachment_counts=_attachment_counts(),
+        unread_set=unread_set,
     )
 
 
@@ -107,10 +150,12 @@ def closed_reports():
         .order_by(Report.created_at.desc())
         .all()
     )
+    _, unread_set = unread_replies_for(current_user.id)
     return render_template("reports/list.html", reports=reports, current="closed",
                            empty_msg="No hay reportes cerrados todavia.",
                            comment_counts=_comment_counts(),
-                           attachment_counts=_attachment_counts())
+                           attachment_counts=_attachment_counts(),
+                           unread_set=unread_set)
 
 
 @bp.route("/new", methods=["GET", "POST"])
@@ -212,6 +257,7 @@ def new_report():
 @login_required
 def detail(report_id):
     rep = Report.query.get_or_404(report_id)
+    _mark_report_view(current_user.id, rep.id)
 
     yes_voter_ids = {v.usuario_id for v in rep.votes if v.vote == "yes"}
     reviewer_ids = {r.usuario_id for r in rep.reviewers}

@@ -30,7 +30,7 @@
         <tbody>
             {% for r in reports %}
             <tr onclick="location.href='{{ url_for('reports.detail', report_id=r.id) }}'" style="cursor:pointer">
-                <td class="pos">{{ r.id }}</td>
+                <td class="pos">{% if unread_set and r.id in unread_set %}<span class="row-dot" title="Tenes respuestas sin ver"></span>{% endif %}{{ r.id }}</td>
                 <td class="player">{{ r.reporter.nickname }}</td>
                 <td class="player">{{ r.target.nickname }}</td>
                 <td class="num"><span class="points-pill" style="--points: {{ r.points }};">{{ r.points }}</span></td>

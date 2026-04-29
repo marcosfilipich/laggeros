@@ -109,6 +109,19 @@ class Vote(db.Model):
     __table_args__ = (db.UniqueConstraint("report_id", "usuario_id", name="uq_vote"),)
 
 
+class ReportView(db.Model):
+    """Cuando un usuario abrio el detalle de un reporte por ultima vez.
+    Se usa para detectar replies a sus comentarios que aun no vio."""
+    __tablename__ = "report_views"
+
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
+    report_id = db.Column(db.Integer, db.ForeignKey("reports.id"), nullable=False)
+    last_viewed_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    __table_args__ = (db.UniqueConstraint("usuario_id", "report_id", name="uq_report_view"),)
+
+
 class Comment(db.Model):
     __tablename__ = "comments"
 
