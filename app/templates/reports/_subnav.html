@@ -5,5 +5,5 @@
         {% if pending_review_count and pending_review_count > 0 %}<span class="nav-badge">{{ pending_review_count }}</span>{% endif %}
     </a>
     <a href="{{ url_for('reports.closed_reports') }}" class="subnav-item {% if current == 'closed' %}active{% endif %}">Reportes cerrados</a>
-    <a href="{{ url_for('reports.new_report') }}" class="subnav-item {% if current == 'new' %}active{% endif %}">Generar reporte</a>
+    <a href="{{ url_for('reports.new_report') }}" class="subnav-item subnav-cta {% if current == 'new' %}active{% endif %}">+ Generar reporte</a>
 </div>

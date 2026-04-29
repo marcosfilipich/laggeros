@@ -345,6 +345,25 @@ main { min-width: 0; }
     background: var(--bg-tertiary);
 }
 
+/* CTA "Generar reporte": empujado al borde derecho, rojo accent */
+.subnav-item.subnav-cta {
+    margin-left: auto;
+    background: var(--accent);
+    color: white;
+    border-right: none;
+    border-bottom: 2px solid transparent;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.subnav-item.subnav-cta:hover {
+    background: var(--accent-hover);
+    color: white;
+}
+.subnav-item.subnav-cta.active {
+    background: var(--accent);
+    color: white;
+    border-bottom-color: white;
+}
+
 /* Streak indicators in ranking */
 .streak {
     font-size: 1.05rem;
