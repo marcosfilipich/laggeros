@@ -5,6 +5,7 @@ from flask import Flask, redirect, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from sqlalchemy import MetaData
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -16,6 +17,10 @@ login_manager.login_message_category = "error"
 def create_app():
     app = Flask(__name__)
     app.config.from_object("config.Config")
+
+    # Confiamos en los headers X-Forwarded-* de nginx (1 hop). Sin esto Flask
+    # cree que el request es HTTP y SESSION_COOKIE_SECURE no manda la cookie.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_for=1, x_host=1)
 
     db.init_app(app)
     login_manager.init_app(app)

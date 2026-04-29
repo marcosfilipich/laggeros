@@ -5,7 +5,7 @@ Sistema de "ranking de lag" peer-reviewed para un grupo de 11 amigos
 de laggear, los demás votan, y si se aprueba se le suman puntos al
 acusado en el ranking.
 
-URL prod: http://laggeros.duckdns.org
+URL prod: https://laggeros.duckdns.org  (HTTP redirige automaticamente a HTTPS)
 Repo: https://github.com/marcosfilipich/laggeros (público)
 
 ---
@@ -29,14 +29,26 @@ Repo: https://github.com/marcosfilipich/laggeros (público)
   `~/.ssh/laggeros_deploy` localmente para auto-deploy / SSH desde scripts
 - App vive en `/home/marcos/laggeros`
 - Entorno via `.env` en ese directorio (`DATABASE_URL`, `SECRET_KEY`,
-  `UPLOAD_FOLDER`); password de DB también en `/etc/laggeros/db_password`
+  `UPLOAD_FOLDER`, `SESSION_COOKIE_SECURE=true`,
+  `REMEMBER_COOKIE_SECURE=true`); password de DB también en
+  `/etc/laggeros/db_password`
 - Servicio systemd: `laggeros` (gunicorn `wsgi:app` en `127.0.0.1:8000`,
   3 workers)
 - nginx en `/etc/nginx/sites-available/laggeros`: proxy a gunicorn,
   sirve `/static/` directo; uploads van por Flask (login_required).
-  `client_max_body_size 25M`
+  `client_max_body_size 25M`. Listen 443 con cert de Let's Encrypt y
+  redirect 80 -> 443.
+- HTTPS via Let's Encrypt + certbot (paquete `python3-certbot-nginx`):
+  cert en `/etc/letsencrypt/live/laggeros.duckdns.org/`. Auto-renovacion
+  via systemd timer `certbot.timer` (revisa diario, renueva ~30 dias antes
+  de expirar; reload nginx via deploy hook). Para forzar renovacion ad-hoc:
+  `sudo certbot renew` o `sudo certbot renew --dry-run`.
+- ProxyFix middleware en `app/__init__.py` lee `X-Forwarded-Proto` que
+  manda nginx asi Flask sabe que el request es HTTPS (sin esto las
+  cookies con `SECURE=True` no se mandan).
 - DuckDNS: cron cada 5 min en `~/duckdns/duck.sh` actualiza la IP
-- Firewall UFW: SSH y "Nginx HTTP" abiertos; resto cerrado
+- Firewall UFW: SSH y "Nginx Full" abiertos (Nginx Full = 80 + 443);
+  resto cerrado
 - Sudoers `marcos`: NOPASSWD para `systemctl restart laggeros`,
   `systemctl is-active laggeros`, `journalctl -u laggeros`, `nginx -t`,
   `systemctl reload nginx`
