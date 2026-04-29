@@ -406,7 +406,7 @@ table.standings {
 }
 table.standings thead { background: var(--bg-tertiary); }
 table.standings th {
-    padding: 0.5rem 0.75rem;
+    padding: 0.6rem 1rem;
     text-align: left;
     font-weight: 600;
     text-transform: uppercase;
@@ -420,7 +420,7 @@ table.standings th.num { text-align: right; }
 table.standings th.center,
 table.standings td.center { text-align: center; }
 table.standings td {
-    padding: 0.5rem 0.75rem;
+    padding: 0.55rem 1rem;
     border-bottom: 1px solid var(--border);
 }
 table.standings td.num {
