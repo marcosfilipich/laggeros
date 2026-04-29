@@ -195,3 +195,18 @@ class AppealAttachment(db.Model):
     mime_type = db.Column(db.String(80), nullable=False)
     size_bytes = db.Column(db.Integer, nullable=False)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+
+class AppealComment(db.Model):
+    __tablename__ = "appeal_comments"
+
+    id = db.Column(db.Integer, primary_key=True)
+    appeal_id = db.Column(db.Integer, db.ForeignKey("appeals.id"), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey("appeal_comments.id"), nullable=True)
+    body = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    usuario = db.relationship("Usuario")
+    appeal = db.relationship("Appeal", backref=db.backref("comments", lazy=True, cascade="all, delete-orphan"))
+    parent = db.relationship("AppealComment", remote_side=[id], backref="children")

@@ -7,8 +7,9 @@ from flask import (
     current_app, send_from_directory,
 )
 from flask_login import login_required, current_user
+from sqlalchemy import func
 from app import db
-from app.models import Usuario, Report, Vote, Punto, Appeal, AppealVote, AppealAttachment
+from app.models import Usuario, Report, Vote, Punto, Appeal, AppealVote, AppealAttachment, AppealComment
 
 bp = Blueprint("appeals", __name__, url_prefix="/appeals")
 
@@ -24,6 +25,15 @@ MAX_FILES = 3
 
 def _ext(filename):
     return filename.rsplit(".", 1)[-1].lower() if "." in (filename or "") else ""
+
+
+def _appeal_comment_counts():
+    rows = (
+        db.session.query(AppealComment.appeal_id, func.count(AppealComment.id))
+        .group_by(AppealComment.appeal_id)
+        .all()
+    )
+    return dict(rows)
 
 
 def _eligible_reports_for_appeal(user_id):
@@ -67,7 +77,8 @@ def list_appeals_redirect():
 def list_appeals():
     appeals = Appeal.query.order_by(Appeal.created_at.desc()).all()
     return render_template("appeals/list.html", appeals=appeals, current="list",
-                           empty_msg="Todavia no hay apelaciones.")
+                           empty_msg="Todavia no hay apelaciones.",
+                           comment_counts=_appeal_comment_counts())
 
 
 @bp.route("/pending")
@@ -83,7 +94,8 @@ def pending_appeals():
             continue
         eligible.append(a)
     return render_template("appeals/list.html", appeals=eligible, current="pending",
-                           empty_msg="No tenes apelaciones pendientes para votar.")
+                           empty_msg="No tenes apelaciones pendientes para votar.",
+                           comment_counts=_appeal_comment_counts())
 
 
 @bp.route("/new", methods=["GET", "POST"])
@@ -203,6 +215,17 @@ def detail(appeal_id):
     # Lista de SI-voters originales para mostrar en la pagina de detalle
     original_yes_voters = [v.usuario for v in appeal.report.votes if v.vote == "yes"]
 
+    # Comments tree (self-referential)
+    all_comments = (
+        AppealComment.query.filter(AppealComment.appeal_id == appeal.id)
+        .order_by(AppealComment.created_at)
+        .all()
+    )
+    children_by_parent = {}
+    for c in all_comments:
+        children_by_parent.setdefault(c.parent_id, []).append(c)
+    top_level_comments = children_by_parent.get(None, [])
+
     return render_template(
         "appeals/detail.html",
         appeal=appeal,
@@ -211,6 +234,41 @@ def detail(appeal_id):
         can_vote=can_vote,
         cant_vote_reason=cant_vote_reason,
         original_yes_voters=original_yes_voters,
+        top_level_comments=top_level_comments,
+        children_by_parent=children_by_parent,
+        total_comments=len(all_comments),
+    )
+
+
+@bp.route("/<int:appeal_id>/comment", methods=["POST"])
+@login_required
+def comment(appeal_id):
+    appeal = Appeal.query.get_or_404(appeal_id)
+
+    body = (request.form.get("body") or "").strip()
+    parent_id_raw = request.form.get("parent_id")
+    parent_id = int(parent_id_raw) if parent_id_raw and parent_id_raw.isdigit() else None
+
+    if not body:
+        flash("El comentario no puede estar vacio.", "error")
+        return redirect(url_for("appeals.detail", appeal_id=appeal.id))
+
+    if parent_id:
+        parent = AppealComment.query.get(parent_id)
+        if not parent or parent.appeal_id != appeal.id:
+            abort(400)
+
+    new_c = AppealComment(
+        appeal_id=appeal.id,
+        usuario_id=current_user.id,
+        parent_id=parent_id,
+        body=body[:5000],
+    )
+    db.session.add(new_c)
+    db.session.commit()
+
+    return redirect(
+        url_for("appeals.detail", appeal_id=appeal.id) + f"#comment-{new_c.id}"
     )
 
 

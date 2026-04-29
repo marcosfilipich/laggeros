@@ -21,6 +21,7 @@
                 <th>Reporte</th>
                 <th class="center">Puntos</th>
                 <th class="center">Estado</th>
+                <th class="center">Comentarios</th>
                 <th>Fecha</th>
             </tr>
         </thead>
@@ -34,6 +35,7 @@
                 </td>
                 <td class="center"><span class="points-pill" style="--points: {{ a.report.points }};">{{ a.report.points }}</span></td>
                 <td class="center"><span class="badge badge-{{ a.status }}">{{ a.status }}</span></td>
+                <td class="center" style="color: var(--text-secondary);">{{ comment_counts.get(a.id, 0) if comment_counts else 0 }}</td>
                 <td style="color: var(--text-secondary);">{{ a.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
             </tr>
             {% endfor %}
