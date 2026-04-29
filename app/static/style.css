@@ -476,7 +476,6 @@ table.standings tbody tr:nth-child(3) td.pos { color: #ffd166; }
     border: 1px solid var(--border);
     background: var(--bg-primary);
     margin: 0 0 1rem;
-    overflow: hidden;
 }
 .reviewer-pick-header {
     display: flex;
