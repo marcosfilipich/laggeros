@@ -109,6 +109,12 @@ def about_rachas():
     return render_template("about/rachas.html", current="rachas")
 
 
+@bp.route("/about/apelaciones")
+@login_required
+def about_apelaciones():
+    return render_template("about/apelaciones.html", current="apelaciones")
+
+
 @bp.route("/about/done", methods=["POST"])
 @login_required
 def about_done():

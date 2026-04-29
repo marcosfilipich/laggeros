@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}About: Apelaciones{% endblock %}
+{% block content %}
+{% include "about/_subnav.html" %}
+
+<div class="section">
+    <div class="section-header">
+        <h2>Como funcionan las <span class="accent">apelaciones</span></h2>
+    </div>
+    <div class="about-body">
+        <p>Si un reporte fue aprobado en tu contra (sos el <em>target</em>), bajo ciertas condiciones podes <strong>apelar</strong> la decision para intentar revertir la sancion.</p>
+
+        <p><strong>Quien puede apelar:</strong></p>
+        <ul>
+            <li>Solo el <strong>target</strong> del reporte aprobado puede apelarlo. Por ejemplo, Queso solo puede apelar reportes aprobados que lo tengan a Queso como target.</li>
+        </ul>
+
+        <p><strong>Que reportes son apelables:</strong></p>
+        <ul>
+            <li>El reporte tiene que estar en estado <span class="badge badge-approved">approved</span>.</li>
+            <li>Tiene que haber sido aprobado con <strong>exactamente 2 votos SI</strong> en total. Esto solo ocurre cuando el reporte se aprueba por la via "todos los reviewers votaron SI" con el minimo de 2 reviewers asignados.</li>
+            <li>Reportes aprobados con 6 o mas votos SI <strong>no son apelables</strong> (la voluntad popular ya se manifesto y no hay caso de discutir).</li>
+        </ul>
+
+        <p><strong>Donde generar y ver apelaciones:</strong></p>
+        <ul>
+            <li>Tab <strong>Apelaciones</strong> en el menu de la izquierda.</li>
+            <li>Adentro hay dos sub-pestanias: <em>Apelaciones solicitadas</em> (lista de las apelaciones existentes) y, a la derecha como CTA, <em>+ Generar apelacion</em> para crear una nueva.</li>
+        </ul>
+
+        <p><strong>Quien puede votar en una apelacion:</strong></p>
+        <ul>
+            <li>Cualquier player <strong>excepto</strong>:
+                <ul>
+                    <li>Los <strong>2 players que votaron SI en el reporte original</strong>.</li>
+                    <li>El <strong>reporter</strong> (creador) del reporte original.</li>
+                    <li>El <strong>apelante</strong> (creador de la apelacion, que es el target del reporte original).</li>
+                </ul>
+            </li>
+        </ul>
+
+        <p><strong>Aprobacion de la apelacion:</strong></p>
+        <ul>
+            <li>La apelacion se aprueba al llegar a <strong>5 votos SI</strong>.</li>
+        </ul>
+
+        <p>El outcome cuando la apelacion se aprueba o queda rechazada (que pasa con los puntos del reporte original, posibles castigos, etc) esta por definirse.</p>
+    </div>
+</div>
+{% include "about/_onboarding_action.html" %}
+{% endblock %}
