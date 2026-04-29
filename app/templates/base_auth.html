@@ -11,7 +11,11 @@
     <header>
         <div class="container header-top">
             <h1><a href="{{ url_for('auth.login') }}">LAG<span class="accent">GEROS</span></a></h1>
-            <span class="tagline">Ranking oficial de los capos que mas laggean</span>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('auth.logout') }}" class="user-btn user-btn-danger" title="Cerrar sesion">Salir</a>
+            {% else %}
+                <span class="tagline">Ranking oficial de los capos que mas laggean</span>
+            {% endif %}
         </div>
     </header>
 
