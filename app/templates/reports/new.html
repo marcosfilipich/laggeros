@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Nuevo reporte{% endblock %}
+{% block content %}
+<div class="section">
+    <div class="section-header">
+        <h2>Nuevo <span class="accent">reporte</span></h2>
+        <span class="section-meta">Acusas a otro player de laggear y se vota despues</span>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="form-body" id="report-form">
+        <label>Target (a quien le sumas puntos si se aprueba)
+            <select name="target_id" id="target-select" required>
+                <option value="">Elegi un player</option>
+                {% for p in targets %}
+                <option value="{{ p.id }}">{{ p.nickname }}{% if p.nombre_real %} ({{ p.nombre_real }}){% endif %}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>Puntos <span class="hint">(1 = leve, 10 = grave)</span>
+            <input type="number" name="points" min="1" max="10" required value="3" style="max-width: 120px;">
+        </label>
+
+        <label>Descripcion
+            <textarea name="description" required minlength="5" maxlength="2000" rows="3" placeholder="Que paso? cuando? en que partida?"></textarea>
+        </label>
+
+        <label>Evidencia adicional <span class="hint">(opcional - links externos, contexto, etc)</span>
+            <textarea name="evidence_text" maxlength="2000" rows="2" placeholder="Pegar links, paste de twitch, etc"></textarea>
+        </label>
+
+        <label>Adjuntos <span class="hint">(opcional, max {{ max_files }} archivos de hasta {{ max_size_mb }}MB c/u: {{ allowed_exts|join(", ") }})</span>
+            <input type="file" name="files" multiple accept=".jpg,.jpeg,.png,.gif,.webp,.pdf">
+        </label>
+
+        <fieldset class="reviewer-pick">
+            <legend>Reviewers <span class="hint">(opcional. El target se agrega solo. No te podes incluir.)</span></legend>
+            <div class="reviewer-grid">
+                {% for p in reviewers_pool %}
+                <label class="reviewer-checkbox" data-uid="{{ p.id }}">
+                    <input type="checkbox" name="reviewers" value="{{ p.id }}">
+                    <span>{{ p.nickname }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </fieldset>
+
+        <button type="submit">Crear reporte</button>
+    </form>
+</div>
+
+<script>
+// Esconder al target del listado de reviewers (no puede ser reviewer de si mismo... espera, si puede)
+// El target SI puede ser reviewer (se agrega automaticamente). Pero no debe aparecer como opcion seleccionable
+// porque ya se agrega solo. Lo desactivamos visualmente.
+(function () {
+    var sel = document.getElementById('target-select');
+    if (!sel) return;
+    function update() {
+        var tid = sel.value;
+        document.querySelectorAll('.reviewer-checkbox').forEach(function (lbl) {
+            var cb = lbl.querySelector('input');
+            if (lbl.dataset.uid === tid) {
+                lbl.classList.add('reviewer-auto');
+                cb.checked = false;
+                cb.disabled = true;
+                lbl.title = 'El target se agrega automaticamente como reviewer';
+            } else {
+                lbl.classList.remove('reviewer-auto');
+                cb.disabled = false;
+                lbl.title = '';
+            }
+        });
+    }
+    sel.addEventListener('change', update);
+    update();
+})();
+</script>
+{% endblock %}

@@ -11,3 +11,6 @@ class Config:
         os.environ.get("DATABASE_URL")
         or f"sqlite:///{BASE_DIR / 'laggeros.sqlite'}"
     )
+
+    UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER") or str(BASE_DIR / "uploads")
+    MAX_CONTENT_LENGTH = 20 * 1024 * 1024  # 20MB total request size

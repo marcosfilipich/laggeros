@@ -20,3 +20,5 @@ Thumbs.db
 linode.txt
 *.pem
 *.key
+
+uploads/

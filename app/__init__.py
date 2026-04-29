@@ -35,9 +35,10 @@ def create_app():
             return
         return redirect(url_for("auth.change_password"))
 
-    from app import routes, auth
+    from app import routes, auth, reports
     app.register_blueprint(routes.bp)
     app.register_blueprint(auth.bp)
+    app.register_blueprint(reports.bp)
 
     @app.cli.command("init-db")
     def init_db():

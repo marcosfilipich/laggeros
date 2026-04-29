@@ -28,6 +28,7 @@
         <aside class="sidebar">
             <nav>
                 <a href="{{ url_for('main.index') }}" {% if request.endpoint == 'main.index' %}class="active"{% endif %}>Ranking</a>
+                <a href="{{ url_for('reports.list_reports') }}" {% if request.endpoint and request.endpoint.startswith('reports.') %}class="active"{% endif %}>Reportes</a>
                 <a href="{{ url_for('main.history') }}" {% if request.endpoint == 'main.history' %}class="active"{% endif %}>Historial</a>
                 <a href="{{ url_for('auth.change_password') }}" {% if request.endpoint == 'auth.change_password' %}class="active"{% endif %}>Configuracion</a>
             </nav>

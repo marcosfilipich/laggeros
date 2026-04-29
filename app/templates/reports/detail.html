@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Reporte #{{ report.id }}{% endblock %}
+{% block content %}
+<div class="section">
+    <div class="section-header">
+        <h2>Reporte <span class="accent">#{{ report.id }}</span></h2>
+        <span class="badge badge-{{ report.status }}">{{ report.status }}</span>
+    </div>
+    <div class="report-meta">
+        <div><span class="meta-label">Reporter</span> <strong>{{ report.reporter.nickname }}</strong></div>
+        <div><span class="meta-label">Target</span> <strong>{{ report.target.nickname }}</strong>{% if report.target.nombre_real %} ({{ report.target.nombre_real }}){% endif %}</div>
+        <div><span class="meta-label">Puntos</span> <strong>{{ report.points }}</strong></div>
+        <div><span class="meta-label">Creado</span> {{ report.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
+    </div>
+
+    <div class="report-block">
+        <div class="block-title">Descripcion</div>
+        <div class="block-body">{{ report.description }}</div>
+    </div>
+
+    {% if report.evidence_text %}
+    <div class="report-block">
+        <div class="block-title">Evidencia adicional</div>
+        <div class="block-body">{{ report.evidence_text }}</div>
+    </div>
+    {% endif %}
+
+    {% if report.attachments %}
+    <div class="report-block">
+        <div class="block-title">Adjuntos ({{ report.attachments|length }})</div>
+        <ul class="attachment-list">
+            {% for a in report.attachments %}
+            <li>
+                <a href="{{ url_for('reports.serve_upload', filename=a.filename) }}" target="_blank">{{ a.original_name }}</a>
+                <span class="attach-meta">{{ a.mime_type }} &middot; {{ (a.size_bytes / 1024)|round(1) }} KB</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="report-block">
+        <div class="block-title">Reviewers asignados ({{ report.reviewers|length }})</div>
+        {% if report.reviewers %}
+        <div class="reviewer-chips">
+            {% for r in report.reviewers %}
+            <span class="reviewer-chip">{{ r.usuario.nickname }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-inline">Sin reviewers</div>
+        {% endif %}
+    </div>
+
+    <div class="report-block">
+        <div class="block-title">Votos ({{ report.votes|length }})</div>
+        {% if report.votes %}
+        <ul class="vote-list">
+            {% for v in report.votes %}
+            <li>
+                <span class="vote-pill vote-{{ v.vote }}">{{ v.vote }}</span>
+                <strong>{{ v.usuario.nickname }}</strong>
+                {% if v.comment %}— <span style="color: var(--text-secondary);">{{ v.comment }}</span>{% endif %}
+                <span class="attach-meta">{{ v.voted_at.strftime("%Y-%m-%d %H:%M") }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty-inline">Sin votos todavia. La votacion se habilita en el siguiente stage.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

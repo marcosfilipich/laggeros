@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Reportes{% endblock %}
+{% block content %}
+<div class="section">
+    <div class="section-header">
+        <h2>Reportes <span class="accent">/</span> Listado</h2>
+        <a href="{{ url_for('reports.new_report') }}" class="btn-primary">+ Nuevo reporte</a>
+    </div>
+    {% if reports %}
+    <table class="standings">
+        <thead>
+            <tr>
+                <th class="num">#</th>
+                <th>Reporter</th>
+                <th>Target</th>
+                <th class="num">Puntos</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reports %}
+            <tr onclick="location.href='{{ url_for('reports.detail', report_id=r.id) }}'" style="cursor:pointer">
+                <td class="pos">{{ r.id }}</td>
+                <td class="player">{{ r.reporter.nickname }}</td>
+                <td class="player">{{ r.target.nickname }}</td>
+                <td class="num">{{ r.points }}</td>
+                <td><span class="badge badge-{{ r.status }}">{{ r.status }}</span></td>
+                <td style="color: var(--text-secondary);">{{ r.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        Todavia no hay reportes. <a href="{{ url_for('reports.new_report') }}">Genera el primero</a>.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
