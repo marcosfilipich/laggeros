@@ -3,103 +3,105 @@
 {% block content %}
 <div class="section">
     <div class="section-header">
-        <h2>Bans <span class="accent">temporales</span></h2>
-        <span class="section-meta">{{ active_bans|length }} activos</span>
+        <h2>Aplicar <span class="accent">ban</span></h2>
+        <span class="section-meta">Ban temporal a un player</span>
     </div>
-
-    <div class="report-block">
-        <div class="block-title">Aplicar nuevo ban</div>
-        {% if bannable %}
-        <form method="post" action="{{ url_for('auth.admin_ban_create') }}" style="display: flex; flex-direction: column; gap: 0.6rem;">
-            <label>Player
-                <select name="user_id" required>
-                    <option value="">-- elegir --</option>
-                    {% for p in bannable %}
-                    <option value="{{ p.id }}">{{ p.nickname }}{% if p.nombre_real %} ({{ p.nombre_real }}){% endif %}</option>
-                    {% endfor %}
-                </select>
-            </label>
-            <label>Duracion
-                <select name="duration_hours" required>
-                    {% for h, label in duration_presets %}
-                    <option value="{{ h }}">{{ label }}</option>
-                    {% endfor %}
-                </select>
-            </label>
-            <label>Motivo
-                <textarea name="reason" required minlength="3" maxlength="500" rows="2" placeholder="Por que lo baneas..."></textarea>
-            </label>
-            <button type="submit" class="btn-vote btn-vote-no" style="align-self: flex-start;"
-                    onclick="return confirm('Confirmar ban?');">
-                Aplicar ban
-            </button>
-        </form>
-        {% else %}
-        <div class="empty-inline">Todos los players estan baneados o no hay players elegibles.</div>
-        {% endif %}
-    </div>
-
-    <div class="report-block">
-        <div class="block-title">Bans activos ({{ active_bans|length }})</div>
-        {% if active_bans %}
-        <table class="standings">
-            <thead>
-                <tr>
-                    <th>Player</th>
-                    <th>Motivo</th>
-                    <th>Hasta</th>
-                    <th>Aplicado por</th>
-                    <th class="center">Accion</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for b in active_bans %}
-                <tr>
-                    <td class="player">{{ b.usuario.nickname }}</td>
-                    <td>{{ b.reason }}</td>
-                    <td>{{ b.banned_until.strftime("%Y-%m-%d %H:%M") }} UTC</td>
-                    <td style="color: var(--text-secondary);">{{ b.banned_by.nickname }}</td>
-                    <td class="center">
-                        <form method="post" action="{{ url_for('auth.admin_ban_lift', ban_id=b.id) }}" style="display:inline">
-                            <button type="submit" class="btn-vote btn-vote-yes"
-                                    onclick="return confirm('Levantar el ban de {{ b.usuario.nickname }}?');">
-                                Levantar
-                            </button>
-                        </form>
-                    </td>
-                </tr>
+    {% if bannable %}
+    <form method="post" action="{{ url_for('auth.admin_ban_create') }}" class="form-body">
+        <label>Player
+            <select name="user_id" required>
+                <option value="">-- elegir --</option>
+                {% for p in bannable %}
+                <option value="{{ p.id }}">{{ p.nickname }}{% if p.nombre_real %} ({{ p.nombre_real }}){% endif %}</option>
                 {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="empty-inline">No hay bans activos.</div>
-        {% endif %}
-    </div>
+            </select>
+        </label>
 
-    {% if history %}
-    <div class="report-block">
-        <div class="block-title">Historial (ultimos 20)</div>
-        <table class="standings">
-            <thead>
-                <tr>
-                    <th>Player</th>
-                    <th>Motivo</th>
-                    <th>Hasta</th>
-                    <th>Aplicado por</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for b in history %}
-                <tr>
-                    <td class="player">{{ b.usuario.nickname }}</td>
-                    <td>{{ b.reason }}</td>
-                    <td style="color: var(--text-secondary);">{{ b.banned_until.strftime("%Y-%m-%d %H:%M") }} UTC</td>
-                    <td style="color: var(--text-secondary);">{{ b.banned_by.nickname }}</td>
-                </tr>
+        <label>Duracion
+            <select name="duration_hours" required>
+                {% for h, label in duration_presets %}
+                <option value="{{ h }}">{{ label }}</option>
                 {% endfor %}
-            </tbody>
-        </table>
-    </div>
+            </select>
+        </label>
+
+        <label>Motivo <span class="hint">(visible publicamente en el banner)</span>
+            <textarea name="reason" required minlength="3" maxlength="500" rows="2" placeholder="Por que lo baneas..."></textarea>
+        </label>
+
+        <button type="submit" onclick="return confirm('Confirmar ban?');">Aplicar ban</button>
+    </form>
+    {% else %}
+    <div class="empty-state">Todos los players estan baneados o no hay players elegibles.</div>
     {% endif %}
 </div>
+
+<div class="section">
+    <div class="section-header">
+        <h2>Bans <span class="accent">activos</span></h2>
+        <span class="section-meta">{{ active_bans|length }} en total</span>
+    </div>
+    {% if active_bans %}
+    <table class="standings">
+        <thead>
+            <tr>
+                <th>Player</th>
+                <th>Motivo</th>
+                <th>Hasta</th>
+                <th>Aplicado por</th>
+                <th class="center">Accion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in active_bans %}
+            <tr>
+                <td class="player">{{ b.usuario.nickname }}</td>
+                <td>{{ b.reason }}</td>
+                <td>{{ b.banned_until.strftime("%Y-%m-%d %H:%M") }} UTC</td>
+                <td style="color: var(--text-secondary);">{{ b.banned_by.nickname }}</td>
+                <td class="center">
+                    <form method="post" action="{{ url_for('auth.admin_ban_lift', ban_id=b.id) }}" style="display:inline">
+                        <button type="submit" class="comment-action"
+                                onclick="return confirm('Levantar el ban de {{ b.usuario.nickname }}?');">
+                            Levantar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">No hay bans activos.</div>
+    {% endif %}
+</div>
+
+{% if history %}
+<div class="section">
+    <div class="section-header">
+        <h2>Historial</h2>
+        <span class="section-meta">Ultimos 20</span>
+    </div>
+    <table class="standings">
+        <thead>
+            <tr>
+                <th>Player</th>
+                <th>Motivo</th>
+                <th>Hasta</th>
+                <th>Aplicado por</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in history %}
+            <tr>
+                <td class="player">{{ b.usuario.nickname }}</td>
+                <td>{{ b.reason }}</td>
+                <td style="color: var(--text-secondary);">{{ b.banned_until.strftime("%Y-%m-%d %H:%M") }} UTC</td>
+                <td style="color: var(--text-secondary);">{{ b.banned_by.nickname }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
 {% endblock %}
