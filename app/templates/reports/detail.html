@@ -133,7 +133,7 @@
     </div>
 
     {# ===== Comments thread ===== #}
-    {% macro render_comment(c, children_by_parent) %}
+    {% macro render_comment(c, children_by_parent, depth=0) %}
     <div class="comment" id="comment-{{ c.id }}">
         <div class="comment-header">
             <strong>{{ c.usuario.nickname }}</strong>
@@ -154,16 +154,26 @@
         {% set kids = children_by_parent.get(c.id, []) %}
         {% if kids %}
         <div class="comment-children">
-            {% for child in kids[:2] %}
-                {{ render_comment(child, children_by_parent) }}
-            {% endfor %}
-            {% if kids|length > 2 %}
-            <button type="button" class="show-more-btn" data-target="more-{{ c.id }}" onclick="toggleMore(this)">Mostrar {{ kids|length - 2 }} respuesta{% if kids|length - 2 != 1 %}s{% endif %} mas</button>
-            <div class="comment-children-more" id="more-{{ c.id }}" style="display:none">
-                {% for child in kids[2:] %}
-                    {{ render_comment(child, children_by_parent) }}
+            {% if depth >= 2 %}
+                {# Cap por profundidad: a partir de depth 2 todos los hijos quedan ocultos #}
+                <button type="button" class="show-more-btn" data-target="more-{{ c.id }}" onclick="toggleMore(this)">Mostrar {{ kids|length }} respuesta{% if kids|length != 1 %}s{% endif %} anidada{% if kids|length != 1 %}s{% endif %}</button>
+                <div class="comment-children-more" id="more-{{ c.id }}" style="display:none">
+                    {% for child in kids %}
+                        {{ render_comment(child, children_by_parent, depth + 1) }}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% for child in kids[:2] %}
+                    {{ render_comment(child, children_by_parent, depth + 1) }}
                 {% endfor %}
-            </div>
+                {% if kids|length > 2 %}
+                <button type="button" class="show-more-btn" data-target="more-{{ c.id }}" onclick="toggleMore(this)">Mostrar {{ kids|length - 2 }} respuesta{% if kids|length - 2 != 1 %}s{% endif %} mas</button>
+                <div class="comment-children-more" id="more-{{ c.id }}" style="display:none">
+                    {% for child in kids[2:] %}
+                        {{ render_comment(child, children_by_parent, depth + 1) }}
+                    {% endfor %}
+                </div>
+                {% endif %}
             {% endif %}
         </div>
         {% endif %}
