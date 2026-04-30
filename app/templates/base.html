@@ -29,6 +29,7 @@
         </div>
     </header>
 
+    {% include "_ban_banner.html" %}
     {% include "_birthday_banner.html" %}
 
     <div class="layout">
@@ -48,6 +49,10 @@
                 <a href="{{ url_for('auth.admin_pending') }}" {% if request.endpoint == 'auth.admin_pending' %}class="active"{% endif %}>
                     Pendientes
                     {% if pending_observer_count and pending_observer_count > 0 %}<span class="nav-badge">{{ pending_observer_count }}</span>{% endif %}
+                </a>
+                <a href="{{ url_for('auth.admin_bans') }}" {% if request.endpoint and request.endpoint.startswith('auth.admin_ban') %}class="active"{% endif %}>
+                    Bans
+                    {% if active_bans and active_bans|length > 0 %}<span class="nav-badge">{{ active_bans|length }}</span>{% endif %}
                 </a>
                 {% endif %}
                 <a href="{{ url_for('auth.change_password') }}" {% if request.endpoint == 'auth.change_password' %}class="active"{% endif %}>Configuracion</a>

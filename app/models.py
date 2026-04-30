@@ -197,6 +197,21 @@ class AppealAttachment(db.Model):
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 
+class Ban(db.Model):
+    """Ban temporal aplicado por un admin a un player. Activo si banned_until > now."""
+    __tablename__ = "bans"
+
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
+    banned_by_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
+    reason = db.Column(db.Text, nullable=False)
+    banned_until = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    usuario = db.relationship("Usuario", foreign_keys=[usuario_id])
+    banned_by = db.relationship("Usuario", foreign_keys=[banned_by_id])
+
+
 class AppealComment(db.Model):
     __tablename__ = "appeal_comments"
 

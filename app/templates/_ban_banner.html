@@ -1,0 +1,12 @@
+{% if active_bans %}
+<div class="ban-banner" style="background: var(--accent); color: white; padding: 0.6rem 0; font-size: 0.85rem; border-bottom: 2px solid #b91c1c; box-shadow: 0 2px 8px rgba(0,0,0,0.4);">
+    <div class="container" style="display: flex; flex-direction: column; gap: 0.3rem;">
+        {% for b in active_bans %}
+        <div>
+            🚫 <strong>{{ b.usuario.nickname }}</strong> baneado hasta <strong>{{ b.banned_until.strftime("%d/%m %H:%M") }}</strong> UTC
+            <span style="opacity: 0.85;">&middot; Motivo: {{ b.reason }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}

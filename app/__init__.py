@@ -32,6 +32,30 @@ def create_app():
         return Usuario.query.get(int(user_id))
 
     @app.before_request
+    def force_ban_check():
+        if not current_user.is_authenticated:
+            return
+        ep = request.endpoint or ""
+        if ep == "auth.logout" or ep == "static":
+            return
+        from app.models import Ban
+        active = (
+            Ban.query.filter(Ban.usuario_id == current_user.id,
+                             Ban.banned_until > datetime.utcnow())
+            .order_by(Ban.banned_until.desc())
+            .first()
+        )
+        if not active:
+            return
+        until = active.banned_until.strftime("%d/%m/%Y %H:%M")
+        reason = active.reason
+        from flask import flash
+        from flask_login import logout_user
+        logout_user()
+        flash(f"Estas baneado hasta {until} UTC. Motivo: {reason}", "error")
+        return redirect(url_for("auth.login"))
+
+    @app.before_request
     def force_password_change():
         if not current_user.is_authenticated:
             return
@@ -120,6 +144,17 @@ def create_app():
         from app.reports import unread_replies_for
         count, _ = unread_replies_for(current_user.id)
         return {"unread_reply_count": count}
+
+    @app.context_processor
+    def inject_active_bans():
+        """Bans activos visibles para todos los usuarios (incluso anonimos)."""
+        from app.models import Ban
+        bans = (
+            Ban.query.filter(Ban.banned_until > datetime.utcnow())
+            .order_by(Ban.banned_until.asc())
+            .all()
+        )
+        return {"active_bans": bans}
 
     @app.context_processor
     def inject_pending_observer_count():

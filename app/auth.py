@@ -1,7 +1,27 @@
+from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
-from app.models import Usuario
+from app.models import Usuario, Ban
+
+
+DURATION_PRESETS = [
+    ("1", "1 hora"),
+    ("6", "6 horas"),
+    ("12", "12 horas"),
+    ("24", "1 dia"),
+    ("48", "2 dias"),
+    ("72", "3 dias"),
+    ("168", "7 dias"),
+]
+
+
+def _active_ban_for(user_id):
+    return (
+        Ban.query.filter(Ban.usuario_id == user_id, Ban.banned_until > datetime.utcnow())
+        .order_by(Ban.banned_until.desc())
+        .first()
+    )
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -27,6 +47,15 @@ def login():
 
         if usuario.rol == "pending_observer":
             flash("Tu cuenta esta pendiente de aprobacion del admin. Te avisamos cuando este lista.", "error")
+            return redirect(url_for("auth.login"))
+
+        active_ban = _active_ban_for(usuario.id)
+        if active_ban:
+            flash(
+                f"Estas baneado hasta {active_ban.banned_until.strftime('%d/%m/%Y %H:%M')} UTC. "
+                f"Motivo: {active_ban.reason}",
+                "error",
+            )
             return redirect(url_for("auth.login"))
 
         login_user(usuario, remember=True)
@@ -170,3 +199,89 @@ def admin_reject(user_id):
     db.session.commit()
     flash(f"Solicitud de {nick} rechazada y borrada.", "success")
     return redirect(url_for("auth.admin_pending"))
+
+
+@bp.route("/admin/bans")
+@login_required
+def admin_bans():
+    _require_admin()
+    now = datetime.utcnow()
+    active = (
+        Ban.query.filter(Ban.banned_until > now)
+        .order_by(Ban.banned_until.asc())
+        .all()
+    )
+    history = (
+        Ban.query.filter(Ban.banned_until <= now)
+        .order_by(Ban.banned_until.desc())
+        .limit(20)
+        .all()
+    )
+    players = Usuario.query.filter(Usuario.rol == "player").order_by(Usuario.nickname).all()
+    banned_user_ids = {b.usuario_id for b in active}
+    bannable = [p for p in players if p.id not in banned_user_ids]
+    return render_template(
+        "auth/admin_bans.html",
+        active_bans=active,
+        history=history,
+        bannable=bannable,
+        duration_presets=DURATION_PRESETS,
+    )
+
+
+@bp.route("/admin/bans/new", methods=["POST"])
+@login_required
+def admin_ban_create():
+    _require_admin()
+    user_id = request.form.get("user_id", type=int)
+    reason = (request.form.get("reason") or "").strip()
+    hours_raw = request.form.get("duration_hours") or ""
+
+    if not user_id:
+        flash("Elegi un player.", "error")
+        return redirect(url_for("auth.admin_bans"))
+
+    u = Usuario.query.get(user_id)
+    if not u or u.rol != "player":
+        flash("Solo se puede banear a players.", "error")
+        return redirect(url_for("auth.admin_bans"))
+
+    if not reason or len(reason) < 3:
+        flash("Escribi un motivo (al menos 3 chars).", "error")
+        return redirect(url_for("auth.admin_bans"))
+
+    valid_hours = {h for h, _ in DURATION_PRESETS}
+    if hours_raw not in valid_hours:
+        flash("Duracion invalida.", "error")
+        return redirect(url_for("auth.admin_bans"))
+    hours = int(hours_raw)
+
+    if _active_ban_for(u.id):
+        flash(f"{u.nickname} ya tiene un ban activo. Levantalo antes de aplicar otro.", "error")
+        return redirect(url_for("auth.admin_bans"))
+
+    b = Ban(
+        usuario_id=u.id,
+        banned_by_id=current_user.id,
+        reason=reason[:500],
+        banned_until=datetime.utcnow() + timedelta(hours=hours),
+    )
+    db.session.add(b)
+    db.session.commit()
+    flash(f"{u.nickname} baneado por {hours}h.", "success")
+    return redirect(url_for("auth.admin_bans"))
+
+
+@bp.route("/admin/bans/<int:ban_id>/lift", methods=["POST"])
+@login_required
+def admin_ban_lift(ban_id):
+    _require_admin()
+    b = Ban.query.get_or_404(ban_id)
+    if b.banned_until <= datetime.utcnow():
+        flash("Ese ban ya expiro.", "error")
+        return redirect(url_for("auth.admin_bans"))
+    nick = b.usuario.nickname
+    b.banned_until = datetime.utcnow()
+    db.session.commit()
+    flash(f"Ban de {nick} levantado.", "success")
+    return redirect(url_for("auth.admin_bans"))
